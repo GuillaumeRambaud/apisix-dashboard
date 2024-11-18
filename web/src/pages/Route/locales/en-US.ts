@@ -205,6 +205,7 @@ export default {
 
   'page.route.data_loader.import': 'Import',
   'page.route.data_loader.import_panel': 'Import data',
+  'page.route.data_loader.export': 'Export',
   'page.route.data_loader.types.openapi3': 'OpenAPI 3',
   'page.route.data_loader.types.openapi_legacy': 'OpenAPI 3 Legacy',
   'page.route.data_loader.labels.loader_type': 'Data Loader Type',
