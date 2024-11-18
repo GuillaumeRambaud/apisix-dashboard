@@ -34,6 +34,7 @@ import (
 	"github.com/apisix/manager-api/internal/core/entity"
 	"github.com/apisix/manager-api/internal/core/store"
 	"github.com/apisix/manager-api/internal/handler"
+	loader "github.com/apisix/manager-api/internal/handler/data_loader/loader"
 	"github.com/apisix/manager-api/internal/log"
 	"github.com/apisix/manager-api/internal/utils"
 	"github.com/apisix/manager-api/internal/utils/consts"
@@ -59,13 +60,14 @@ func (h *Handler) ApplyRoute(r *gin.Engine) {
 	r.GET("/apisix/admin/export/routes/:ids", wgin.Wraps(h.ExportRoutes,
 		wrapper.InputType(reflect.TypeOf(ExportInput{}))))
 	r.GET("/apisix/admin/export/routes", wgin.Wraps(h.ExportAllRoutes))
+	r.GET("/apisix/admin/export/ExportConfiguration", wgin.Wraps(h.ExportConfiguration))
 }
 
 type ExportInput struct {
 	IDs string `auto_read:"ids,path"`
 }
 
-//ExportRoutes Export data by passing route ID, such as "R1" or multiple route parameters, such as "R1,R2"
+// ExportRoutes Export data by passing route ID, such as "R1" or multiple route parameters, such as "R1,R2"
 func (h *Handler) ExportRoutes(c droplet.Context) (interface{}, error) {
 	input := c.Input().(*ExportInput)
 
@@ -111,7 +113,7 @@ var (
 	_allHTTPMethods = []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodConnect, http.MethodTrace, http.MethodOptions}
 )
 
-//ExportAllRoutes All routes can be directly exported without passing parameters
+// ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportAllRoutes(c droplet.Context) (interface{}, error) {
 	routelist, err := h.routeStore.List(c.Context(), store.ListInput{})
 
@@ -136,7 +138,7 @@ func (h *Handler) ExportAllRoutes(c droplet.Context) (interface{}, error) {
 	return swagger, nil
 }
 
-//RouteToOpenAPI3 Pass in route list parameter: []*entity.Route, convert route data to openapi3 and export processing function
+// RouteToOpenAPI3 Pass in route list parameter: []*entity.Route, convert route data to openapi3 and export processing function
 func (h *Handler) RouteToOpenAPI3(c droplet.Context, routes []*entity.Route) (*openapi3.Swagger, error) {
 	paths := openapi3.Paths{}
 	paramsRefs := []*openapi3.ParameterRef{}
@@ -291,8 +293,8 @@ func (h *Handler) RouteToOpenAPI3(c droplet.Context, routes []*entity.Route) (*o
 	return &swagger, nil
 }
 
-//ParseLabels When service and route have labels at the same time, use route's label.
-//When route has no label, service sometimes uses service's label. This function is used to process this logic
+// ParseLabels When service and route have labels at the same time, use route's label.
+// When route has no label, service sometimes uses service's label. This function is used to process this logic
 func ParseLabels(route *entity.Route, serviceLabels map[string]string) (map[string]string, error) {
 	if route.Labels != nil {
 		return route.Labels, nil
@@ -302,7 +304,7 @@ func ParseLabels(route *entity.Route, serviceLabels map[string]string) (map[stri
 	return nil, nil
 }
 
-//ParsePathItem Convert data in route to openapi3
+// ParsePathItem Convert data in route to openapi3
 func ParsePathItem(path openapi3.Operation, routeMethod string) *openapi3.Operation {
 	_path := &openapi3.Operation{
 		ExtensionProps: path.ExtensionProps,
@@ -508,4 +510,124 @@ func GetPathNumber() func() int {
 		i++
 		return i
 	}
+}
+
+// ExportAllRoutes All routes can be directly exported without passing parameters
+func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
+
+	consumers, err := h.ConsumerList(c)
+	if err != nil {
+		return nil, err
+	}
+
+	routes, err := h.RouteList(c)
+	if err != nil {
+		return nil, err
+	}
+
+	upstreams, err := h.UpstreamList(c)
+	if err != nil {
+		return nil, err
+	}
+
+	services, err := h.ServiceList(c)
+	if err != nil {
+		return nil, err
+	}
+
+	configuration := loader.DataSetsExport{
+		Consumers: consumers,
+		Routes:    routes,
+		Upstreams: upstreams,
+		Services:  services,
+	}
+
+	return configuration, nil
+}
+
+// ConsumerList Return all the consumers configurations
+func (h *Handler) ConsumerList(c droplet.Context) ([]*entity.Consumer, error) {
+	consumers := []*entity.Consumer{}
+	consumerList, err := h.consumerStore.List(c.Context(), store.ListInput{
+		Predicate: func(obj interface{}) bool {
+			return true
+		},
+		Less: func(i, j interface{}) bool {
+			return true
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(consumerList.Rows) < 1 {
+		return nil, consts.ErrConsumerData
+	}
+
+	for _, consumer := range consumerList.Rows {
+		consumers = append(consumers, consumer.(*entity.Consumer))
+	}
+
+	return consumers, err
+}
+
+// routeList Return all the routes configurations
+func (h *Handler) RouteList(c droplet.Context) ([]*entity.Route, error) {
+	routes := []*entity.Route{}
+	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(routeList.Rows) < 1 {
+		return nil, consts.ErrRouteData
+	}
+
+	for _, route := range routeList.Rows {
+		routes = append(routes, route.(*entity.Route))
+	}
+
+	return routes, err
+}
+
+// UpstreamList Return all the upstreams configurations
+func (h *Handler) UpstreamList(c droplet.Context) ([]*entity.Upstream, error) {
+	upstreams := []*entity.Upstream{}
+	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(upstreamList.Rows) < 1 {
+		return nil, consts.ErrUpstreamData
+	}
+
+	for _, upstream := range upstreamList.Rows {
+		upstreams = append(upstreams, upstream.(*entity.Upstream))
+	}
+
+	return upstreams, err
+}
+
+// ServiceList Return all the services configurations
+func (h *Handler) ServiceList(c droplet.Context) ([]*entity.Service, error) {
+	services := []*entity.Service{}
+	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(serviceList.Rows) < 1 {
+		return nil, consts.ErrServiceData
+	}
+
+	for _, service := range serviceList.Rows {
+		services = append(services, service.(*entity.Service))
+	}
+
+	return services, err
 }

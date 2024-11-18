@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DownOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
+import { DownOutlined, ExportOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -42,6 +42,7 @@ import { DELETE_FIELDS } from '@/constants';
 import { timestampToLocaleString } from '@/helpers';
 import usePagination from '@/hooks/usePagination';
 import DataLoaderImport from '@/pages/Route/components/DataLoader/Import';
+import { downloadFile } from '@/pages/Route/service';
 
 import { DebugDrawView } from './components/DebugViews';
 import { create, fetchLabelList, fetchList, remove, update, updateRouteStatus } from './service';
@@ -133,6 +134,13 @@ const Page: React.FC = () => {
         icon: <ImportOutlined />,
         onClick: () => {
           setShowImportDrawer(true);
+        },
+      },
+      {
+        name: formatMessage({ id: 'page.route.data_loader.export' }),
+        icon: <ExportOutlined />,
+        onClick: () => { 
+          downloadFile();
         },
       },
     ];

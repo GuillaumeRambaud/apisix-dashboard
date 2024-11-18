@@ -199,6 +199,7 @@ export default {
 
   'page.route.data_loader.import': '导入',
   'page.route.data_loader.import_panel': '导入路由',
+  'page.route.data_loader.export': '出口',
   'page.route.data_loader.types.openapi3': 'OpenAPI 3',
   'page.route.data_loader.types.openapi_legacy': 'OpenAPI 3 旧版',
   'page.route.data_loader.labels.loader_type': '数据加载器类型',
