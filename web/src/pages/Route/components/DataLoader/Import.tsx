@@ -37,12 +37,13 @@ import { importRoutes } from '@/pages/Route/service';
 import { useIntl } from '@@/plugin-locale/localeExports';
 
 import OpenAPI3 from './loader/OpenAPI3';
+import YamlConfig from './loader/YamlConfig';
 
 type Props = {
   onClose: (finish: boolean) => void;
 };
 
-type ImportType = 'openapi3' | 'openapi_legacy';
+type ImportType = 'openapi3' | 'yaml_config' | 'openapi_legacy';
 type ImportState = 'import' | 'result';
 type ImportResult = {
   success: boolean;
@@ -74,6 +75,8 @@ const Option: React.FC<{
   switch (type) {
     case 'openapi_legacy':
       return <></>;
+    case 'yaml_config':
+      return <YamlConfig />;
     case 'openapi3':
     default:
       return <OpenAPI3 />;
@@ -84,7 +87,7 @@ const DataLoaderImport: React.FC<Props> = (props) => {
   const [form] = Form.useForm();
   const { formatMessage } = useIntl();
   const { onClose } = props;
-  const [importType, setImportType] = useState<ImportType>('openapi3');
+  const [importType, setImportType] = useState<ImportType>('yaml_config');
   const [uploadFileList, setUploadFileList] = useState<RcFile[]>([]);
   const [state, setState] = useState<ImportState>('import');
   const [importResult, setImportResult] = useState<ImportResult>({
@@ -166,6 +169,9 @@ const DataLoaderImport: React.FC<Props> = (props) => {
                 initialValue={importType}
               >
                 <Select onChange={(value: ImportType) => setImportType(value)}>
+                <Select.Option value="yaml_config">
+                    {formatMessage({ id: 'page.route.data_loader.types.yaml_config' })}
+                  </Select.Option>
                   <Select.Option value="openapi3">
                     {formatMessage({ id: 'page.route.data_loader.types.openapi3' })}
                   </Select.Option>
