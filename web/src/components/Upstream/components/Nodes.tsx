@@ -73,6 +73,12 @@ const Component: React.FC<Props> = ({ readonly }) => {
                     style={{ marginBottom: 0 }}
                     name={[field.name, 'port']}
                     label={formatMessage({ id: 'page.upstream.step.port' })}
+                    rules={[
+                      {
+                        required: true,
+                        message: formatMessage({ id: 'page.upstream.step.input.port' }),
+                      },
+                    ]}
                   >
                     <InputNumber
                       placeholder={formatMessage({ id: 'page.upstream.step.port' })}
