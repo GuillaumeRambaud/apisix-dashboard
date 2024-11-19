@@ -62,7 +62,7 @@ type Status uint8
 
 // swagger:model Route
 type Route struct {
-	BaseInfo
+	BaseInfo        BaseInfo
 	URI             string                 `json:"uri,omitempty"`
 	Uris            []string               `json:"uris,omitempty"`
 	Name            string                 `json:"name"`

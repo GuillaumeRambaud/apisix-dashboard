@@ -64,8 +64,8 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		fmt.Fprint(os.Stdout, "Import Upstreams", upstream, "\n")
 
 		transformModel.Upstreams = append(transformModel.Upstreams, entity.Upstream{
-			BaseInfo:    entity.BaseInfo{},
-			UpstreamDef: upstream,
+			BaseInfo:    *upstream.GetBaseInfo(),
+			UpstreamDef: upstream.UpstreamDef,
 		})
 	}
 
