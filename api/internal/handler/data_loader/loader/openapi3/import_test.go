@@ -97,7 +97,7 @@ func TestParseAPI101Merge(t *testing.T) {
 	assert.Equal(t, "roundrobin", data.Upstreams[0].Type)
 
 	// Route
-	assert.Equal(t, data.Upstreams[0].ID, data.Routes[0].UpstreamID)
+	assert.Equal(t, data.Upstreams[0].BaseInfo.ID, data.Routes[0].UpstreamID)
 	for _, route := range data.Routes {
 		switch route.Name {
 		case "test_customer":

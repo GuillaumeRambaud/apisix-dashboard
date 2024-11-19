@@ -96,7 +96,7 @@ func (h *Handler) Get(c droplet.Context) (interface{}, error) {
 
 type ListInput struct {
 	Name string `auto_read:"name,query"`
-	ID string `auto_read:"id,query"`
+	ID   string `auto_read:"id,query"`
 	Desc string `auto_read:"desc,query"`
 	store.Pagination
 }
@@ -109,32 +109,34 @@ type ListInput struct {
 // produces:
 // - application/json
 // parameters:
-// - name: page
-//   in: query
-//   description: page number
-//   required: false
-//   type: integer
-// - name: page_size
-//   in: query
-//   description: page size
-//   required: false
-//   type: integer
-// - name: name
-//   in: query
-//   description: name of upstream
-//   required: false
-//   type: string
+//   - name: page
+//     in: query
+//     description: page number
+//     required: false
+//     type: integer
+//   - name: page_size
+//     in: query
+//     description: page size
+//     required: false
+//     type: integer
+//   - name: name
+//     in: query
+//     description: name of upstream
+//     required: false
+//     type: string
+//
 // responses:
-//   '0':
-//     description: list response
-//     schema:
-//       type: array
-//       items:
-//         "$ref": "#/definitions/upstream"
-//   default:
-//     description: unexpected error
-//     schema:
-//       "$ref": "#/definitions/ApiError"
+//
+//	'0':
+//	  description: list response
+//	  schema:
+//	    type: array
+//	    items:
+//	      "$ref": "#/definitions/upstream"
+//	default:
+//	  description: unexpected error
+//	  schema:
+//	    "$ref": "#/definitions/ApiError"
 func (h *Handler) List(c droplet.Context) (interface{}, error) {
 	input := c.Input().(*ListInput)
 
@@ -352,7 +354,7 @@ func (h *Handler) Exist(c droplet.Context) (interface{}, error) {
 	ret, err := h.upstreamStore.List(c.Context(), store.ListInput{
 		Predicate: func(obj interface{}) bool {
 			r := obj.(*entity.Upstream)
-			if r.Name == name && r.ID != exclude {
+			if r.Name == name && r.BaseInfo.ID != exclude {
 				return true
 			}
 			return false
