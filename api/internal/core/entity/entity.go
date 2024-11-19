@@ -63,7 +63,7 @@ type Status uint8
 // swagger:model Route
 type Route struct {
 	BaseInfo
-	ID              string                 `json:"id"`
+	ID              interface{}            `json:"id"`
 	CreateTime      int64                  `json:"create_time,omitempty"`
 	UpdateTime      int64                  `json:"update_time,omitempty"`
 	URI             string                 `json:"uri,omitempty"`
