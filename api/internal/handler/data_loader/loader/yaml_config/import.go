@@ -46,6 +46,8 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, route := range importData.Routes {
+		fmt.Fprint(os.Stdout, "Import Routes", route, "\n")
+
 		transformModel.Routes = append(transformModel.Routes, route)
 	}
 
