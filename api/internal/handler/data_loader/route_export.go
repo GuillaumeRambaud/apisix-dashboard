@@ -561,10 +561,6 @@ func (h *Handler) ConsumerList(c droplet.Context) ([]*entity.Consumer, error) {
 		return nil, err
 	}
 
-	if len(consumerList.Rows) < 1 {
-		return nil, consts.ErrConsumerData
-	}
-
 	for _, consumer := range consumerList.Rows {
 		consumers = append(consumers, consumer.(*entity.Consumer))
 	}
@@ -579,10 +575,6 @@ func (h *Handler) RouteList(c droplet.Context) ([]*entity.Route, error) {
 
 	if err != nil {
 		return nil, err
-	}
-
-	if len(routeList.Rows) < 1 {
-		return nil, consts.ErrRouteData
 	}
 
 	for _, route := range routeList.Rows {
@@ -601,10 +593,6 @@ func (h *Handler) UpstreamList(c droplet.Context) ([]*entity.Upstream, error) {
 		return nil, err
 	}
 
-	if len(upstreamList.Rows) < 1 {
-		return nil, consts.ErrUpstreamData
-	}
-
 	for _, upstream := range upstreamList.Rows {
 		upstreams = append(upstreams, upstream.(*entity.Upstream))
 	}
@@ -619,10 +607,6 @@ func (h *Handler) ServiceList(c droplet.Context) ([]*entity.Service, error) {
 
 	if err != nil {
 		return nil, err
-	}
-
-	if len(serviceList.Rows) < 1 {
-		return nil, consts.ErrServiceData
 	}
 
 	for _, service := range serviceList.Rows {
