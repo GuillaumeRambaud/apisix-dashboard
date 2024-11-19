@@ -121,7 +121,7 @@ func NameExistCheck(ctx context.Context, stg store.Interface, resource, name str
 				objID = obj.(*entity.Service).ID
 				objName = obj.(*entity.Service).Name
 			case "upstream":
-				objID = obj.(*entity.Upstream).ID
+				objID = obj.(*entity.Upstream).BaseInfo.ID
 				objName = obj.(*entity.Upstream).Name
 			default:
 				panic("bad resource")
