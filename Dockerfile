@@ -16,14 +16,15 @@
 #
 FROM alpine:latest as pre-build
 
-COPY . /usr/local/apisix-dashboard
+ARG APISIX_DASHBOARD_VERSION=master-patched-grambaud
 
 RUN set -x \
     && apk add --no-cache --virtual .builddeps git \
+    && git clone https://github.com/GuillaumeRambaud/apisix-dashboard.git -b ${APISIX_DASHBOARD_VERSION} /usr/local/apisix-dashboard \
     && cd /usr/local/apisix-dashboard && git clean -Xdf \
     && rm -f ./.githash && git log --pretty=format:"%h" -1 > ./.githash
 
-FROM golang:1.19 as api-builder
+FROM golang:latest as api-builder
 
 ARG ENABLE_PROXY=false
 
