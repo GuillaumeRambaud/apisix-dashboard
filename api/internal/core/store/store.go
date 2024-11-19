@@ -268,6 +268,8 @@ func (s *GenericStore) CreateCheck(obj interface{}) ([]byte, error) {
 }
 
 func (s *GenericStore) Create(ctx context.Context, obj interface{}) (interface{}, error) {
+	fmt.Fprint(os.Stdout, "Create GetBaseInfo", obj.(entity.GetBaseInfo), "\n")
+
 	if setter, ok := obj.(entity.GetBaseInfo); ok {
 		info := setter.GetBaseInfo()
 		info.Creating()
