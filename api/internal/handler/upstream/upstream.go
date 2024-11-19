@@ -150,7 +150,7 @@ func (h *Handler) List(c droplet.Context) (interface{}, error) {
 				return strings.Contains(obj.(*entity.Upstream).Desc, input.Desc)
 			}
 			if input.ID != "" {
-				return strings.Contains(utils.InterfaceToString(obj.(*entity.Upstream).ID), input.ID)
+				return strings.Contains(utils.InterfaceToString(obj.(*entity.Upstream).BaseInfo.ID), input.ID)
 			}
 			return true
 		},
@@ -196,12 +196,12 @@ func (h *Handler) Update(c droplet.Context) (interface{}, error) {
 	input := c.Input().(*UpdateInput)
 
 	// check if ID in body is equal ID in path
-	if err := handler.IDCompare(input.ID, input.Upstream.ID); err != nil {
+	if err := handler.IDCompare(input.ID, input.Upstream.BaseInfo.ID); err != nil {
 		return &data.SpecCodeResponse{StatusCode: http.StatusBadRequest}, err
 	}
 
 	if input.ID != "" {
-		input.Upstream.ID = input.ID
+		input.Upstream.BaseInfo.ID = input.ID
 	}
 
 	// check name existed
