@@ -64,8 +64,8 @@ type Status uint8
 type Route struct {
 	BaseInfo
 	ID              interface{}            `json:"id"`
-	CreateTime      int64                  `json:"create_time,omitempty"`
-	UpdateTime      int64                  `json:"update_time,omitempty"`
+	CreateTime      int                    `json:"create_time,omitempty"`
+	UpdateTime      int                    `json:"update_time,omitempty"`
 	URI             string                 `json:"uri,omitempty"`
 	Uris            []string               `json:"uris,omitempty"`
 	Name            string                 `json:"name"`
@@ -165,6 +165,9 @@ type UpstreamKeepalivePool struct {
 }
 
 type UpstreamDef struct {
+	ID            interface{}            `json:"id"`
+	CreateTime    int                    `json:"create_time,omitempty"`
+	UpdateTime    int                    `json:"update_time,omitempty"`
 	Nodes         interface{}            `json:"nodes,omitempty"`
 	Retries       *int                   `json:"retries,omitempty"`
 	Timeout       *Timeout               `json:"timeout,omitempty"`
