@@ -202,7 +202,7 @@ type UpstreamNameResponse struct {
 
 func (upstream *Upstream) Parse2NameResponse() (*UpstreamNameResponse, error) {
 	nameResp := &UpstreamNameResponse{
-		ID:   upstream.ID,
+		ID:   upstream.BaseInfo.ID,
 		Name: upstream.Name,
 	}
 	return nameResp, nil
