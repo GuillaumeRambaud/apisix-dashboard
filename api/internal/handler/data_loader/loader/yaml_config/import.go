@@ -18,6 +18,7 @@ package yaml_config
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 
 	"github.com/apisix/manager-api/internal/core/entity"
@@ -57,6 +58,9 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, upstream := range importData.Upstreams {
+
+		fmt.Fprint(os.Stdout, "Import Upstreams", upstream, "\n")
+
 		transformModel.Upstreams = append(transformModel.Upstreams, entity.Upstream{
 			BaseInfo:    entity.BaseInfo{},
 			UpstreamDef: upstream,
