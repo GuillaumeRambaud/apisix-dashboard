@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"path"
 	"reflect"
 
@@ -36,6 +37,8 @@ import (
 	"github.com/apisix/manager-api/internal/handler"
 	loader "github.com/apisix/manager-api/internal/handler/data_loader/loader"
 	"github.com/apisix/manager-api/internal/handler/data_loader/loader/openapi3"
+	"github.com/apisix/manager-api/internal/handler/data_loader/loader/yaml_config"
+	"github.com/apisix/manager-api/internal/utils"
 )
 
 type ImportHandler struct {
@@ -83,11 +86,13 @@ type ImportInput struct {
 	FileName    string `auto_read:"_file"`
 	FileContent []byte `auto_read:"file"`
 
-	MergeMethod string `auto_read:"merge_method"`
+	MergeMethod    string `auto_read:"merge_method"`
+	OverrideMethod string `auto_read:"override_method"`
 }
 
 const (
-	LoaderTypeOpenAPI3 LoaderType = "openapi3"
+	LoaderTypeOpenAPI3   LoaderType = "openapi3"
+	LoaderTypeYamlConfig LoaderType = "yaml_config"
 )
 
 func (h *ImportHandler) Import(c droplet.Context) (interface{}, error) {
@@ -114,6 +119,26 @@ func (h *ImportHandler) Import(c droplet.Context) (interface{}, error) {
 			TaskName:    input.TaskName,
 		}
 		break
+	case LoaderTypeYamlConfig:
+		l = &yaml_config.Loader{
+			OverrideMethod: input.OverrideMethod == "true",
+			TaskName:       input.TaskName,
+		}
+
+		if suffix != ".yaml" && suffix != ".yml" {
+			return nil, errors.Errorf("required file type is .yaml or .yml but got: %s", suffix)
+		}
+
+		if input.OverrideMethod == "true" {
+			isDeleted, err := h.DeleteConfigurations(c)
+
+			fmt.Fprint(os.Stdout, "\nAll configuration deleted:", isDeleted, " - ", err)
+			if err != nil || !isDeleted {
+				return nil, fmt.Errorf("Failed to deleted configuration !")
+			}
+		}
+
+		break
 	default:
 		return nil, fmt.Errorf("unsupported data loader type: %s", input.Type)
 	}
@@ -131,6 +156,7 @@ func (h *ImportHandler) Import(c droplet.Context) (interface{}, error) {
 
 	// Create APISIX resources
 	createErrs := h.createEntities(c.Context(), dataSets)
+
 	return h.convertToImportResult(dataSets, createErrs), nil
 }
 
@@ -309,4 +335,148 @@ func (ImportHandler) convertToImportResult(data *loader.DataSets, errs map[store
 			Errors: errs[store.HubKeyProto],
 		},
 	}
+}
+
+// Delete all Configurations
+func (h *ImportHandler) DeleteConfigurations(c droplet.Context) (bool, error) {
+	isDeleted := false
+
+	isDeleted, err := h.DeleteRoutes(c)
+	if err != nil {
+		return isDeleted, err
+	}
+
+	isDeleted, err = h.DeleteConsumers(c)
+	if err != nil {
+		return isDeleted, err
+	}
+
+	isDeleted, err = h.DeleteUpstreams(c)
+	if err != nil {
+		return isDeleted, err
+	}
+
+	isDeleted, err = h.DeleteServices(c)
+	if err != nil {
+		return isDeleted, err
+	}
+
+	return true, err
+}
+
+// Delete all Routes
+func (h *ImportHandler) DeleteRoutes(c droplet.Context) (bool, error) {
+	isDeleted := false
+	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
+
+	if len(routeList.Rows) < 1 {
+		return true, err
+	}
+
+	if err != nil {
+		return isDeleted, err
+	}
+
+	routeIds := []string{}
+	for _, route := range routeList.Rows {
+		routeIds = append(routeIds, utils.InterfaceToString(route.(*entity.Route).ID))
+	}
+
+	if len(routeIds) < 1 {
+		return true, err
+	}
+
+	h.routeStore.BatchDelete(c.Context(), routeIds)
+
+	return true, err
+}
+
+// Delete all Consumers
+func (h *ImportHandler) DeleteConsumers(c droplet.Context) (bool, error) {
+	isDeleted := false
+
+	consumerList, err := h.consumerStore.List(c.Context(), store.ListInput{
+		Predicate: func(obj interface{}) bool {
+			return true
+		},
+		Less: func(i, j interface{}) bool {
+			return true
+		},
+	})
+
+	if len(consumerList.Rows) < 1 {
+		return true, err
+	}
+
+	if err != nil {
+		return isDeleted, err
+	}
+
+	consumerNames := []string{}
+
+	for _, route := range consumerList.Rows {
+		consumerNames = append(consumerNames, utils.InterfaceToString(route.(*entity.Consumer).Username))
+	}
+
+	if len(consumerNames) < 1 {
+		return true, err
+	}
+
+	h.consumerStore.BatchDelete(c.Context(), consumerNames)
+
+	return true, err
+}
+
+// Delete all Upstreams
+func (h *ImportHandler) DeleteUpstreams(c droplet.Context) (bool, error) {
+	isDeleted := false
+	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
+
+	if len(upstreamList.Rows) < 1 {
+		return true, err
+	}
+
+	if err != nil {
+		return isDeleted, err
+	}
+
+	upstreamIds := []string{}
+	for _, route := range upstreamList.Rows {
+		upstreamIds = append(upstreamIds, utils.InterfaceToString(route.(*entity.Upstream).ID))
+	}
+
+	if len(upstreamIds) < 1 {
+		return true, err
+	}
+
+	h.upstreamStore.BatchDelete(c.Context(), upstreamIds)
+
+	return true, err
+}
+
+// Delete all Upstreams
+func (h *ImportHandler) DeleteServices(c droplet.Context) (bool, error) {
+	isDeleted := false
+	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{})
+
+	if len(serviceList.Rows) < 1 {
+		return true, err
+	}
+
+	if err != nil {
+		return isDeleted, err
+	}
+
+	serviceIds := []string{}
+	for _, route := range serviceList.Rows {
+		serviceIds = append(serviceIds, utils.InterfaceToString(route.(*entity.Service).ID))
+	}
+
+	if len(serviceIds) < 1 {
+		return true, err
+	}
+
+	h.serviceStore.BatchDelete(c.Context(), serviceIds)
+
+	return true, err
 }

@@ -39,8 +39,14 @@ var (
 	ErrIDUsername = errors.New("consumer's id and username must be a same value")
 	// ErrorParameterID is the error use for parameter ID is empty
 	ErrParameterID = errors.New("Parameter IDs cannot be empty")
+	// ErrConsumerData is the error that the route data is empty
+	ErrConsumerData = errors.New("Consumer data is empty, cannot be exported")
 	// ErrorRouteData is the error that the route data is empty
 	ErrRouteData = errors.New("Route data is empty, cannot be exported")
+	// ErrUpstreamData is the error that the route data is empty
+	ErrUpstreamData = errors.New("Upstream data is empty, cannot be exported")
+	// ErrServiceData is the error that the route data is empty
+	ErrServiceData = errors.New("Service data is empty, cannot be exported")
 	// ErrorImportFile is the error that use for import a empty file
 	ErrImportFile = errors.New("empty or invalid imported file")
 	// ErrorImportFile means the certificate is invalid

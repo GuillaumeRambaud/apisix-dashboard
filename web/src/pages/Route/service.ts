@@ -19,6 +19,10 @@ import { request } from 'umi';
 
 import { transformLabelList } from '@/helpers';
 
+import { saveAs } from 'file-saver';
+import moment from 'moment';
+import yaml from 'js-yaml';
+
 import { transformRouteData, transformStepData, transformUpstreamNodes } from './transform';
 
 export const create = (data: RouteModule.RequestData, mode?: RouteModule.RequestMode) =>
@@ -122,3 +126,18 @@ export const importRoutes = (formData: FormData) => {
     requestType: 'form',
   });
 };
+
+export async function downloadFile() {
+  request('/export/ExportConfiguration', {
+    method: 'GET',
+    responseType: "blob",
+  }).then(function(response: any) {
+    let exportFile: string;
+    let exportFileName = `APISIX_configuration_${moment().format('YYYYMMDDHHmmss')}.yaml`;
+    exportFile = yaml.dump(response.data);
+    const blob = new Blob([exportFile], {type: 'application/x-yaml',});
+    saveAs(window.URL.createObjectURL(blob), exportFileName);
+  }).catch(function(error: any) {
+    console.error("Error downloading file:", error);
+  });
+}

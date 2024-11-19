@@ -207,15 +207,20 @@ export default {
 
   'page.route.data_loader.import': 'İçeri Aktar',
   'page.route.data_loader.import_panel': 'Veriyi içe Aktar',
+  'page.route.data_loader.export': 'İhracat',
   'page.route.data_loader.types.openapi3': 'OpenAPI 3',
+  'page.route.data_loader.types.yaml_config': 'YAML Veri Seti',
   'page.route.data_loader.types.openapi_legacy': 'OpenAPI 3 Eski Sürüm',
   'page.route.data_loader.labels.loader_type': 'Veri Yükleyici Tipi',
   'page.route.data_loader.labels.task_name': 'İş Adı',
   'page.route.data_loader.labels.upload': 'Yükle',
   'page.route.data_loader.labels.openapi3_merge_method': 'HTTP Methodlarını birleştir',
+  'page.route.data_loader.labels.yaml_config_override_method': 'Yapılandırmayı sil',
   'page.route.data_loader.tips.select_type': 'Lütfen veri yükleyicisini seçin',
   'page.route.data_loader.tips.input_task_name': 'Lütfen içeri aktarılan iş adını belirtin',
   'page.route.data_loader.tips.click_upload': 'Yüklemek için tıkla',
   'page.route.data_loader.tips.openapi3_merge_method':
     'OpenAPI routelarda birden çok HTTP yöntemi tek bir rotada birleştirilir. Routelarda farklı yapılandırmalara sahip birden fazla HTTP yöntemi olduğunda (ör. securitySchema) ve bunları birden çok rotada oluşturmak için bu seçeneği kapatabilirsiniz. ',
+  'page.route.data_loader.tips.yaml_config_override_method':
+    'Mevcut yapılandırmayı silin (Rotalar, Yukarı Akışlar, Hizmetler, Tüketiciler)',
 };

@@ -23,15 +23,29 @@ import "github.com/apisix/manager-api/internal/core/entity"
 // On import, raw data will be parsed as DataSets
 // On export, DataSets will be encoded to raw data
 type DataSets struct {
-	Routes        []entity.Route
-	Upstreams     []entity.Upstream
-	Services      []entity.Service
-	Consumers     []entity.Consumer
-	SSLs          []entity.SSL
-	StreamRoutes  []entity.StreamRoute
-	GlobalPlugins []entity.GlobalPlugins
-	PluginConfigs []entity.PluginConfig
-	Protos        []entity.Proto
+	Routes        []entity.Route         `yaml:"routes"`
+	Upstreams     []entity.Upstream      `yaml:"upstreams"`
+	Services      []entity.Service       `yaml:"services"`
+	Consumers     []entity.Consumer      `yaml:"consumers"`
+	SSLs          []entity.SSL           `yaml:"ssls"`
+	StreamRoutes  []entity.StreamRoute   `yaml:"StreamRoute"`
+	GlobalPlugins []entity.GlobalPlugins `yaml:"globalplugins"`
+	PluginConfigs []entity.PluginConfig  `yaml:"pluginconfigs"`
+	Protos        []entity.Proto         `yaml:"Proto"`
+}
+
+type DataSetsExport struct {
+	Consumers []*entity.Consumer `json:"consumers,omitempty" yaml:"consumers"`
+	Routes    []*entity.Route    `json:"routes,omitempty" yaml:"routes"`
+	Upstreams []*entity.Upstream `json:"upstreams,omitempty" yaml:"upstreams"`
+	Services  []*entity.Service  `json:"services,omitempty" yaml:"services"`
+}
+
+type DataSetsImport struct {
+	Consumers []entity.Consumer    `json:"consumers,omitempty" yaml:"consumers"`
+	Routes    []entity.Route       `json:"routes,omitempty" yaml:"routes"`
+	Upstreams []entity.UpstreamDef `json:"upstreams,omitempty" yaml:"upstreams"`
+	Services  []entity.Service     `json:"services,omitempty" yaml:"services"`
 }
 
 // Loader provide data loader abstraction
