@@ -62,7 +62,10 @@ type Status uint8
 
 // swagger:model Route
 type Route struct {
-	BaseInfo        BaseInfo
+	BaseInfo
+	ID              string                 `json:"id"`
+	CreateTime      int64                  `json:"create_time,omitempty"`
+	UpdateTime      int64                  `json:"update_time,omitempty"`
 	URI             string                 `json:"uri,omitempty"`
 	Uris            []string               `json:"uris,omitempty"`
 	Name            string                 `json:"name"`
@@ -162,6 +165,9 @@ type UpstreamKeepalivePool struct {
 }
 
 type UpstreamDef struct {
+	ID            string                 `json:"id"`
+	CreateTime    int64                  `json:"create_time,omitempty"`
+	UpdateTime    int64                  `json:"update_time,omitempty"`
 	Nodes         interface{}            `json:"nodes,omitempty"`
 	Retries       *int                   `json:"retries,omitempty"`
 	Timeout       *Timeout               `json:"timeout,omitempty"`
