@@ -49,7 +49,7 @@ type UpstreamImport struct {
 	ID            interface{}            `yaml:"id"`
 	CreateTime    int64                  `yaml:"create_time,omitempty"`
 	UpdateTime    int64                  `yaml:"update_time,omitempty"`
-	Nodes         interface{}            `yaml:"nodes,omitempty"`
+	Nodes         []Node                 `yaml:"nodes,omitempty"`
 	Retries       *int                   `yaml:"retries,omitempty"`
 	Timeout       *Timeout               `yaml:"timeout,omitempty"`
 	Type          string                 `yaml:"type,omitempty"`
