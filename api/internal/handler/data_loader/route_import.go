@@ -442,7 +442,7 @@ func (h *ImportHandler) DeleteUpstreams(c droplet.Context) (bool, error) {
 
 	upstreamIds := []string{}
 	for _, route := range upstreamList.Rows {
-		upstreamIds = append(upstreamIds, utils.InterfaceToString(route.(*entity.Upstream).BaseInfo.ID))
+		upstreamIds = append(upstreamIds, utils.InterfaceToString(route.(*entity.Upstream).ID))
 	}
 
 	if len(upstreamIds) < 1 {

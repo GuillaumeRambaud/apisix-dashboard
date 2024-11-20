@@ -153,7 +153,7 @@ func InitStores() error {
 		ObjType:  reflect.TypeOf(entity.Upstream{}),
 		KeyFunc: func(obj interface{}) string {
 			r := obj.(*entity.Upstream)
-			return utils.InterfaceToString(r.BaseInfo.ID)
+			return utils.InterfaceToString(r.ID)
 		},
 	})
 	if err != nil {

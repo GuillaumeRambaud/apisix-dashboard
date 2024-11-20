@@ -37,8 +37,15 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		panic(fmt.Sprintf("input format error: expected []byte but it is %s", reflect.TypeOf(input).Kind().String()))
 	}
 
+	importDataTest := loader.DataSetsImportTest{}
+	err := yaml.Unmarshal(d, &importDataTest)
+
+	fmt.Fprint(os.Stdout, "Import Routes", importDataTest.Routes, "\n")
+	fmt.Fprint(os.Stdout, "Import Route 1", importDataTest.Routes[0].ID, "\n")
+	fmt.Fprint(os.Stdout, "Import Upstream 1", importDataTest.Routes[0].UpstreamID, "\n")
+
 	importData := loader.DataSetsImport{}
-	err := yaml.Unmarshal(d, &importData)
+	err = yaml.Unmarshal(d, &importData)
 
 	if err != nil {
 		return nil, err

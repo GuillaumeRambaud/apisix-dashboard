@@ -48,6 +48,13 @@ type DataSetsImport struct {
 	Services  []entity.Service  `json:"services,omitempty" yaml:"services"`
 }
 
+type DataSetsImportTest struct {
+	Consumers []entity.Consumer       `json:"consumers,omitempty" yaml:"consumers"`
+	Routes    []entity.RouteImport    `json:"routes,omitempty" yaml:"routes"`
+	Upstreams []entity.UpstreamImport `json:"upstreams,omitempty" yaml:"upstreams"`
+	Services  []entity.Service        `json:"services,omitempty" yaml:"services"`
+}
+
 // Loader provide data loader abstraction
 type Loader interface {
 	// Import accepts data and converts it into entity data sets
