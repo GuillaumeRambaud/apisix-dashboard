@@ -76,7 +76,8 @@ type Configuration struct {
 }
 
 var (
-	TestDataset = "../../../../../test/testdata/import/dataset.yaml"
+	TestDataset  = "../../../../../test/testdata/import/dataset.yaml"
+	TestDataset2 = "../../../../../test/testdata/import/dataset2.yaml"
 )
 
 // Test API 101 on MergeMethod mode
@@ -118,31 +119,26 @@ func TestYamlMapping(t *testing.T) {
 	data, err := l.Import(fileContent)
 	assert.NoError(t, err)
 
-	assert.Len(t, data.Routes, 1)
+	assert.Len(t, data.Routes, 2)
 	assert.Len(t, data.Upstreams, 1)
 
 	// Upstream
 	assert.Equal(t, "541060218100909018", data.Upstreams[0].ID)
 	assert.Equal(t, "roundrobin", data.Upstreams[0].Type)
+}
 
-	// // Route
-	// assert.Equal(t, data.Upstreams[0].ID, data.Routes[0].UpstreamID)
-	// for _, route := range data.Routes {
-	// 	switch route.Name {
-	// 	case "test_customer":
-	// 		assert.Contains(t, route.Uris, "/customer")
-	// 		assert.Contains(t, route.Methods, "GET", "GET")
-	// 		assert.Equal(t, entity.Status(0), route.Status)
-	// 	case "test_customers":
-	// 		assert.Contains(t, route.Uris, "/customers")
-	// 		assert.Contains(t, route.Methods, "GET")
-	// 		assert.Equal(t, entity.Status(0), route.Status)
-	// 	case "test_customer/{customer_id}":
-	// 		assert.Contains(t, route.Uris, "/customer/*")
-	// 		assert.Contains(t, route.Methods, "PUT", "DELETE")
-	// 		assert.Equal(t, entity.Status(0), route.Status)
-	// 	default:
-	// 		t.Fatal("bad route name exist")
-	// 	}
-	// }
+func TestYamlMapping2(t *testing.T) {
+	fileContent, err := ioutil.ReadFile(TestDataset2)
+	assert.NoError(t, err)
+
+	l := &Loader{OverrideMethod: true, TaskName: "test"}
+	data, err := l.Import(fileContent)
+	assert.NoError(t, err)
+
+	assert.Len(t, data.Routes, 2)
+	assert.Len(t, data.Upstreams, 1)
+
+	// Upstream
+	assert.Equal(t, "541206531396338380", data.Upstreams[0].ID)
+	assert.Equal(t, "roundrobin", data.Upstreams[0].Type)
 }

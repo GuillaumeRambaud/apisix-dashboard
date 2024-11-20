@@ -18,6 +18,7 @@ package yaml_config
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 
 	"github.com/apisix/manager-api/internal/core/entity"
@@ -44,7 +45,61 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	transformModel := loader.DataSets{}
+	for _, upstream := range importData.Upstreams {
+
+		ups := entity.Upstream{
+			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
+			UpstreamDef: entity.UpstreamDef{
+				Nodes:         upstream.Nodes,
+				Retries:       upstream.Retries,
+				Timeout:       upstream.Timeout,
+				Type:          upstream.Type,
+				Checks:        upstream.Checks,
+				HashOn:        upstream.HashOn,
+				Key:           upstream.Key,
+				Scheme:        upstream.Scheme,
+				DiscoveryType: upstream.DiscoveryType,
+				DiscoveryArgs: upstream.DiscoveryArgs,
+				PassHost:      upstream.PassHost,
+				UpstreamHost:  upstream.UpstreamHost,
+				Name:          upstream.Name,
+				Desc:          upstream.Desc,
+				ServiceName:   upstream.ServiceName,
+				Labels:        upstream.Labels,
+				TLS:           upstream.TLS,
+				KeepalivePool: upstream.KeepalivePool,
+				RetryTimeout:  upstream.RetryTimeout,
+			},
+		}
+		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
+
+		transformModel.Upstreams = append(transformModel.Upstreams, ups)
+	}
+
 	for _, route := range importData.Routes {
+
+		// upstream := &entity.UpstreamDef{
+		// 	Nodes:         route.Upstream.Nodes,
+		// 	Retries:       route.Upstream.Retries,
+		// 	Timeout:       route.Upstream.Timeout,
+		// 	Type:          route.Upstream.Type,
+		// 	Checks:        route.Upstream.Checks,
+		// 	HashOn:        route.Upstream.HashOn,
+		// 	Key:           route.Upstream.Key,
+		// 	Scheme:        route.Upstream.Scheme,
+		// 	DiscoveryType: route.Upstream.DiscoveryType,
+		// 	DiscoveryArgs: route.Upstream.DiscoveryArgs,
+		// 	PassHost:      route.Upstream.PassHost,
+		// 	UpstreamHost:  route.Upstream.UpstreamHost,
+		// 	Name:          route.Upstream.Name,
+		// 	Desc:          route.Upstream.Desc,
+		// 	ServiceName:   route.Upstream.ServiceName,
+		// 	Labels:        route.Upstream.Labels,
+		// 	TLS:           route.Upstream.TLS,
+		// 	KeepalivePool: route.Upstream.KeepalivePool,
+		// 	RetryTimeout:  route.Upstream.RetryTimeout,
+		// }
+		// fmt.Fprint(os.Stdout, "\nupstreamupstream ", upstream)
 
 		rte := entity.Route{
 			BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
@@ -96,35 +151,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		transformModel.Services = append(transformModel.Services, svc)
 	}
 
-	for _, upstream := range importData.Upstreams {
-
-		ups := entity.Upstream{
-			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
-			UpstreamDef: entity.UpstreamDef{
-				Nodes:         upstream.Nodes,
-				Retries:       upstream.Retries,
-				Timeout:       upstream.Timeout,
-				Type:          upstream.Type,
-				Checks:        upstream.Checks,
-				HashOn:        upstream.HashOn,
-				Key:           upstream.Key,
-				Scheme:        upstream.Scheme,
-				DiscoveryType: upstream.DiscoveryType,
-				DiscoveryArgs: upstream.DiscoveryArgs,
-				PassHost:      upstream.PassHost,
-				UpstreamHost:  upstream.UpstreamHost,
-				Name:          upstream.Name,
-				Desc:          upstream.Desc,
-				ServiceName:   upstream.ServiceName,
-				Labels:        upstream.Labels,
-				TLS:           upstream.TLS,
-				KeepalivePool: upstream.KeepalivePool,
-				RetryTimeout:  upstream.RetryTimeout,
-			},
-		}
-
-		transformModel.Upstreams = append(transformModel.Upstreams, ups)
-	}
-
+	fmt.Fprint(os.Stdout, "\nRoutes ", transformModel.Routes)
+	fmt.Fprint(os.Stdout, "\nRoutes ", transformModel.Routes[0].Upstream)
 	return &transformModel, err
 }

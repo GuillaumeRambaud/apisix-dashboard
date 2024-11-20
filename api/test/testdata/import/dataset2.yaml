@@ -1,0 +1,62 @@
+routes:
+  - id: '541206580855571148'
+    create_time: 1732113860
+    update_time: 1732113860
+    uri: /route1
+    name: route1
+    desc: route1
+    methods:
+      - GET
+      - POST
+    upstream:
+      nodes:
+        - host: t1arcdiv1dsy.dsone.3ds.com
+          port: 789
+          weight: 1
+      timeout:
+        connect: 6
+        send: 6
+        read: 6
+      type: roundrobin
+      scheme: http
+      pass_host: pass
+      keepalive_pool:
+        idle_timeout: 60
+        requests: 1000
+        size: 320
+    labels:
+      API_VERSION: '1.0'
+    status: 1
+  - id: '541206615919952588'
+    create_time: 1732113880
+    update_time: 1732113880
+    uri: /route2
+    name: route2
+    desc: route2
+    methods:
+      - GET
+    upstream_id: '541206531396338380'
+    status: 1
+upstreams:
+  - id: '541206531396338380'
+    create_time: 1732113830
+    update_time: 1732113830
+    nodes:
+      - host: t1arcdiv1dsy.dsone.3ds.com
+        port: 123
+        weight: 1
+      - host: dsone.3ds.com
+        port: 456
+        weight: 1
+    timeout:
+      connect: 6
+      send: 6
+      read: 6
+    type: roundrobin
+    scheme: http
+    pass_host: pass
+    name: upstream1
+    keepalive_pool:
+      idle_timeout: 60
+      requests: 1000
+      size: 320
