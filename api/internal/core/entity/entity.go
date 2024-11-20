@@ -17,8 +17,6 @@
 package entity
 
 import (
-	"fmt"
-	"os"
 	"reflect"
 	"time"
 
@@ -36,7 +34,6 @@ func (info *BaseInfo) GetBaseInfo() *BaseInfo {
 }
 
 func (info *BaseInfo) Creating() {
-	fmt.Fprint(os.Stdout, "Creating GetBaseInfo", info.ID, "\n")
 	if info.ID == nil {
 		info.ID = utils.GetFlakeUidStr()
 	} else {
