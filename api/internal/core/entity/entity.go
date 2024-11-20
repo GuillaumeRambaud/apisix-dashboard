@@ -26,7 +26,7 @@ import (
 )
 
 type BaseInfo struct {
-	ID         interface{} `yaml:"id"`
+	ID         interface{} `json:"id" yaml:"id"`
 	CreateTime int64       `json:"create_time,omitempty" yaml:"create_time"`
 	UpdateTime int64       `json:"update_time,omitempty" yaml:"update_time"`
 }

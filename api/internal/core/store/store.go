@@ -238,7 +238,7 @@ func (s *GenericStore) ingestValidate(obj interface{}) (err error) {
 }
 
 func (s *GenericStore) CreateCheck(obj interface{}) ([]byte, error) {
-
+	fmt.Fprint(os.Stdout, "CreateCheck GetBaseInfo", obj.(entity.GetBaseInfo), "\n")
 	if setter, ok := obj.(entity.GetBaseInfo); ok {
 		info := setter.GetBaseInfo()
 		info.Creating()
