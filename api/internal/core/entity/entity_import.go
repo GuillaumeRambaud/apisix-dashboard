@@ -21,7 +21,7 @@ type StatusImport uint8
 type RouteImport struct {
 	ID              interface{}            `json:"id"`
 	CreateTime      interface{}            `json:"create_time,omitempty"`
-	UpdateTime      int64                  `yaml:"update_time"`
+	UpdateTime      int64                  `json:"update_time,omitempty" yaml:"update_time"`
 	URI             string                 `json:"uri,omitempty"`
 	Uris            []string               `json:"uris,omitempty"`
 	Name            string                 `json:"name"`
@@ -40,7 +40,7 @@ type RouteImport struct {
 	PluginConfigID  interface{}            `json:"plugin_config_id,omitempty"`
 	Upstream        *UpstreamDef           `json:"upstream,omitempty"`
 	ServiceID       interface{}            `json:"service_id,omitempty"`
-	UpstreamID      interface{}            `yaml:"upstream_id"`
+	UpstreamID      interface{}            `json:"upstream_id,omitempty" yaml:"upstream_id"`
 	ServiceProtocol string                 `json:"service_protocol,omitempty"`
 	Labels          map[string]string      `json:"labels,omitempty"`
 	EnableWebsocket bool                   `json:"enable_websocket,omitempty"`
