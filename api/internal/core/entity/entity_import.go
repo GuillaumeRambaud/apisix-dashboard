@@ -36,7 +36,7 @@ type RouteImport struct {
 	ScriptID        interface{}            `yaml:"script_id,omitempty"` // For debug and optimization(cache), currently same as Route's ID
 	Plugins         map[string]interface{} `yaml:"plugins,omitempty"`
 	PluginConfigID  interface{}            `yaml:"plugin_config_id,omitempty"`
-	Upstream        *UpstreamDef           `yaml:"upstream,omitempty"`
+	Upstream        UpstreamDef            `yaml:"upstream,omitempty"`
 	ServiceID       interface{}            `yaml:"service_id,omitempty"`
 	UpstreamID      interface{}            `yaml:"upstream_id,omitempty"`
 	ServiceProtocol string                 `yaml:"service_protocol,omitempty"`

@@ -119,7 +119,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			ScriptID:        route.ScriptID,
 			Plugins:         route.Plugins,
 			PluginConfigID:  route.PluginConfigID,
-			Upstream:        route.Upstream,
+			Upstream:        &route.Upstream,
 			ServiceID:       route.ServiceID,
 			UpstreamID:      route.UpstreamID,
 			ServiceProtocol: route.ServiceProtocol,
@@ -151,7 +151,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		transformModel.Services = append(transformModel.Services, svc)
 	}
 
-	fmt.Fprint(os.Stdout, "\nRoutes ", transformModel.Routes)
-	fmt.Fprint(os.Stdout, "\nRoutes ", transformModel.Routes[0].Upstream)
+	fmt.Fprint(os.Stdout, "\nRoutes1 ", transformModel.Routes)
+	fmt.Fprint(os.Stdout, "\nRoutes2 ", transformModel.Routes[0].Upstream.Nodes)
 	return &transformModel, err
 }
