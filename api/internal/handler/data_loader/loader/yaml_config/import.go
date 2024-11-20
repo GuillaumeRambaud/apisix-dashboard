@@ -18,7 +18,6 @@ package yaml_config
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 
 	"github.com/apisix/manager-api/internal/core/entity"
@@ -40,21 +39,12 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	importData := loader.DataSetsImportTest{}
 	err := yaml.Unmarshal(d, &importData)
 
-	// fmt.Fprint(os.Stdout, "Import Routes", importData.Routes, "\n")
-	// fmt.Fprint(os.Stdout, "Import Route:", importData.Routes[0].ID, "\n")
-	// fmt.Fprint(os.Stdout, "Import Upstreams:", importData.Upstreams, "\n")
-	// fmt.Fprint(os.Stdout, "Import Upstream:", importData.Upstreams[0].ID, "\n")
-
-	// importData := loader.DataSetsImport{}
-	// err = yaml.Unmarshal(d, &importData)
-
 	if err != nil {
 		return nil, err
 	}
 
 	transformModel := loader.DataSets{}
 	for _, route := range importData.Routes {
-
 		rte := entity.Route{
 			BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
 			URI:             route.URI,
@@ -106,9 +96,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, upstream := range importData.Upstreams {
-
-		fmt.Fprint(os.Stdout, "Import Upstreams", upstream, "\n")
-
 		ups := entity.Upstream{
 			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
 			UpstreamDef: entity.UpstreamDef{
@@ -136,8 +123,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		transformModel.Upstreams = append(transformModel.Upstreams, ups)
 	}
-
-	fmt.Fprint(os.Stdout, "Import Upstreams", transformModel, "\n")
 
 	return &transformModel, err
 }

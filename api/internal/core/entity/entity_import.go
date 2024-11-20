@@ -72,7 +72,9 @@ type UpstreamImport struct {
 
 // swagger:model Service
 type ServiceImport struct {
-	BaseInfo
+	ID              interface{}            `yaml:"id"`
+	CreateTime      int64                  `yaml:"create_time,omitempty"`
+	UpdateTime      int64                  `yaml:"update_time,omitempty"`
 	Name            string                 `yaml:"name,omitempty"`
 	Desc            string                 `yaml:"desc,omitempty"`
 	Upstream        *UpstreamDef           `yaml:"upstream,omitempty"`
