@@ -77,7 +77,7 @@ type ServiceImport struct {
 	UpdateTime      int64                  `yaml:"update_time,omitempty"`
 	Name            string                 `yaml:"name,omitempty"`
 	Desc            string                 `yaml:"desc,omitempty"`
-	Upstream        *UpstreamDef           `yaml:"upstream,omitempty"`
+	Upstream        UpstreamImport         `yaml:"upstream,omitempty"`
 	UpstreamID      interface{}            `yaml:"upstream_id,omitempty"`
 	Plugins         map[string]interface{} `yaml:"plugins,omitempty"`
 	Script          string                 `yaml:"script,omitempty"`
