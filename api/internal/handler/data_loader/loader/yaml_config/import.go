@@ -23,7 +23,7 @@ import (
 
 	"github.com/apisix/manager-api/internal/core/entity"
 	"github.com/apisix/manager-api/internal/handler/data_loader/loader"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 )
 
 // Import implements loader.Loader.
@@ -37,15 +37,16 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		panic(fmt.Sprintf("input format error: expected []byte but it is %s", reflect.TypeOf(input).Kind().String()))
 	}
 
-	importDataTest := loader.DataSetsImportTest{}
-	err := yaml.Unmarshal(d, &importDataTest)
+	importData := loader.DataSetsImportTest{}
+	err := yaml.Unmarshal(d, &importData)
 
-	fmt.Fprint(os.Stdout, "Import Routes", importDataTest.Routes, "\n")
-	fmt.Fprint(os.Stdout, "Import Route 1", importDataTest.Routes[0].ID, "\n")
-	fmt.Fprint(os.Stdout, "Import Upstream 1", importDataTest.Routes[0].UpstreamID, "\n")
+	// fmt.Fprint(os.Stdout, "Import Routes", importData.Routes, "\n")
+	// fmt.Fprint(os.Stdout, "Import Route:", importData.Routes[0].ID, "\n")
+	// fmt.Fprint(os.Stdout, "Import Upstreams:", importData.Upstreams, "\n")
+	// fmt.Fprint(os.Stdout, "Import Upstream:", importData.Upstreams[0].ID, "\n")
 
-	importData := loader.DataSetsImport{}
-	err = yaml.Unmarshal(d, &importData)
+	// importData := loader.DataSetsImport{}
+	// err = yaml.Unmarshal(d, &importData)
 
 	if err != nil {
 		return nil, err
@@ -53,9 +54,35 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, route := range importData.Routes {
-		fmt.Fprint(os.Stdout, "Import Routes", route, "\n")
 
-		transformModel.Routes = append(transformModel.Routes, route)
+		rte := entity.Route{
+			BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
+			URI:             route.URI,
+			Uris:            route.Uris,
+			Name:            route.Name,
+			Desc:            route.Desc,
+			Priority:        route.Priority,
+			Methods:         route.Methods,
+			Host:            route.Host,
+			Hosts:           route.Hosts,
+			RemoteAddr:      route.RemoteAddr,
+			RemoteAddrs:     route.RemoteAddrs,
+			Vars:            route.Vars,
+			FilterFunc:      route.FilterFunc,
+			Script:          route.Script,
+			ScriptID:        route.ScriptID,
+			Plugins:         route.Plugins,
+			PluginConfigID:  route.PluginConfigID,
+			Upstream:        route.Upstream,
+			ServiceID:       route.ServiceID,
+			UpstreamID:      route.UpstreamID,
+			ServiceProtocol: route.ServiceProtocol,
+			Labels:          route.Labels,
+			EnableWebsocket: route.EnableWebsocket,
+			Status:          route.Status,
+		}
+
+		transformModel.Routes = append(transformModel.Routes, rte)
 	}
 
 	for _, consumer := range importData.Consumers {
@@ -63,18 +90,54 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, service := range importData.Services {
-		transformModel.Services = append(transformModel.Services, service)
+		svc := entity.Service{
+			BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
+			Name:            service.Name,
+			Desc:            service.Desc,
+			Upstream:        service.Upstream,
+			UpstreamID:      service.UpstreamID,
+			Plugins:         service.Plugins,
+			Script:          service.Script,
+			Labels:          service.Labels,
+			EnableWebsocket: service.EnableWebsocket,
+			Hosts:           service.Hosts,
+		}
+		transformModel.Services = append(transformModel.Services, svc)
 	}
 
 	for _, upstream := range importData.Upstreams {
 
 		fmt.Fprint(os.Stdout, "Import Upstreams", upstream, "\n")
 
-		transformModel.Upstreams = append(transformModel.Upstreams, entity.Upstream{
-			BaseInfo:    *upstream.GetBaseInfo(),
-			UpstreamDef: upstream.UpstreamDef,
-		})
+		ups := entity.Upstream{
+			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
+			UpstreamDef: entity.UpstreamDef{
+				Nodes:         upstream.Nodes,
+				Retries:       upstream.Retries,
+				Timeout:       upstream.Timeout,
+				Type:          upstream.Type,
+				Checks:        upstream.Checks,
+				HashOn:        upstream.HashOn,
+				Key:           upstream.Key,
+				Scheme:        upstream.Scheme,
+				DiscoveryType: upstream.DiscoveryType,
+				DiscoveryArgs: upstream.DiscoveryArgs,
+				PassHost:      upstream.PassHost,
+				UpstreamHost:  upstream.UpstreamHost,
+				Name:          upstream.Name,
+				Desc:          upstream.Desc,
+				ServiceName:   upstream.ServiceName,
+				Labels:        upstream.Labels,
+				TLS:           upstream.TLS,
+				KeepalivePool: upstream.KeepalivePool,
+				RetryTimeout:  upstream.RetryTimeout,
+			},
+		}
+
+		transformModel.Upstreams = append(transformModel.Upstreams, ups)
 	}
+
+	fmt.Fprint(os.Stdout, "Import Upstreams", transformModel, "\n")
 
 	return &transformModel, err
 }
