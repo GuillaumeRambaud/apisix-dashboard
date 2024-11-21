@@ -155,8 +155,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			}
 		}
 
-		// fmt.Fprint(os.Stdout, "\nupstreamupstream ", upstream)
-
 		transformModel.Routes = append(transformModel.Routes, rte)
 	}
 
@@ -165,41 +163,56 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, service := range importData.Services {
+		svc := entity.Service{}
+		if service.UpstreamID == nil {
+			upstream := &entity.UpstreamDef{
+				Nodes:         service.Upstream.Nodes,
+				Retries:       service.Upstream.Retries,
+				Timeout:       service.Upstream.Timeout,
+				Type:          service.Upstream.Type,
+				Checks:        service.Upstream.Checks,
+				HashOn:        service.Upstream.HashOn,
+				Key:           service.Upstream.Key,
+				Scheme:        service.Upstream.Scheme,
+				DiscoveryType: service.Upstream.DiscoveryType,
+				DiscoveryArgs: service.Upstream.DiscoveryArgs,
+				PassHost:      service.Upstream.PassHost,
+				UpstreamHost:  service.Upstream.UpstreamHost,
+				Name:          service.Upstream.Name,
+				Desc:          service.Upstream.Desc,
+				ServiceName:   service.Upstream.ServiceName,
+				Labels:        service.Upstream.Labels,
+				TLS:           service.Upstream.TLS,
+				KeepalivePool: service.Upstream.KeepalivePool,
+				RetryTimeout:  service.Upstream.RetryTimeout,
+			}
 
-		upstream := &entity.UpstreamDef{
-			Nodes:         service.Upstream.Nodes,
-			Retries:       service.Upstream.Retries,
-			Timeout:       service.Upstream.Timeout,
-			Type:          service.Upstream.Type,
-			Checks:        service.Upstream.Checks,
-			HashOn:        service.Upstream.HashOn,
-			Key:           service.Upstream.Key,
-			Scheme:        service.Upstream.Scheme,
-			DiscoveryType: service.Upstream.DiscoveryType,
-			DiscoveryArgs: service.Upstream.DiscoveryArgs,
-			PassHost:      service.Upstream.PassHost,
-			UpstreamHost:  service.Upstream.UpstreamHost,
-			Name:          service.Upstream.Name,
-			Desc:          service.Upstream.Desc,
-			ServiceName:   service.Upstream.ServiceName,
-			Labels:        service.Upstream.Labels,
-			TLS:           service.Upstream.TLS,
-			KeepalivePool: service.Upstream.KeepalivePool,
-			RetryTimeout:  service.Upstream.RetryTimeout,
+			svc = entity.Service{
+				BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
+				Name:            service.Name,
+				Desc:            service.Desc,
+				Upstream:        upstream,
+				UpstreamID:      service.UpstreamID,
+				Plugins:         service.Plugins,
+				Script:          service.Script,
+				Labels:          service.Labels,
+				EnableWebsocket: service.EnableWebsocket,
+				Hosts:           service.Hosts,
+			}
+		} else {
+			svc = entity.Service{
+				BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
+				Name:            service.Name,
+				Desc:            service.Desc,
+				UpstreamID:      service.UpstreamID,
+				Plugins:         service.Plugins,
+				Script:          service.Script,
+				Labels:          service.Labels,
+				EnableWebsocket: service.EnableWebsocket,
+				Hosts:           service.Hosts,
+			}
 		}
 
-		svc := entity.Service{
-			BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
-			Name:            service.Name,
-			Desc:            service.Desc,
-			Upstream:        upstream,
-			UpstreamID:      service.UpstreamID,
-			Plugins:         service.Plugins,
-			Script:          service.Script,
-			Labels:          service.Labels,
-			EnableWebsocket: service.EnableWebsocket,
-			Hosts:           service.Hosts,
-		}
 		transformModel.Services = append(transformModel.Services, svc)
 	}
 
