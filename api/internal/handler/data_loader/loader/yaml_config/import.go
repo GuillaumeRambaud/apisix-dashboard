@@ -109,7 +109,10 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		}
 
 		fmt.Fprint(os.Stdout, "\nUPSTREAM isValide", isValide, checks)
-		// ups.Checks = checks
+		ups.Checks = entity.Checks{
+			Active:  act,
+			Passive: psv,
+		}
 
 		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
 		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks", upstream.Checks)
