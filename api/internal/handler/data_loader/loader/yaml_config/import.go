@@ -22,7 +22,9 @@ import (
 
 	"github.com/apisix/manager-api/internal/core/entity"
 	"github.com/apisix/manager-api/internal/handler/data_loader/loader"
-	"gopkg.in/yaml.v2"
+
+	// "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // Import implements loader.Loader.
@@ -36,7 +38,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		panic(fmt.Sprintf("input format error: expected []byte but it is %s", reflect.TypeOf(input).Kind().String()))
 	}
 
-	importData := loader.DataSetsImportTest{}
+	importData := loader.DataSetsImport{}
 	err := yaml.Unmarshal(d, &importData)
 
 	if err != nil {
