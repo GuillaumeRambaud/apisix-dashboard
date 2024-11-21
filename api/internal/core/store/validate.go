@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/xeipuuv/gojsonschema"
 	"go.uber.org/zap/buffer"
@@ -227,7 +226,6 @@ func checkConf(reqBody interface{}) error {
 		}
 	case *entity.Upstream:
 		upstream := reqBody.(*entity.Upstream)
-		fmt.Fprint(os.Stdout, "\ncheckConf: ", upstream)
 		if err := checkUpstream(&upstream.UpstreamDef); err != nil {
 			return err
 		}
@@ -236,19 +234,13 @@ func checkConf(reqBody interface{}) error {
 }
 
 func (v *APISIXJsonSchemaValidator) Validate(obj interface{}) error {
-
-	fmt.Fprint(os.Stdout, "\nValidate obj: ", obj)
-	fmt.Fprint(os.Stdout, "\nValidate gojsonschema: ", v.schema)
-
 	ret, err := v.schema.Validate(gojsonschema.NewGoLoader(obj))
 
-	fmt.Fprint(os.Stdout, "\nValidate err: ", err)
 	if err != nil {
 		log.Errorf("schema validate failed: %s, s: %v, obj: %v", err, v.schema, obj)
 		return fmt.Errorf("schema validate failed: %s", err)
 	}
 
-	fmt.Fprint(os.Stdout, "\nValidate ret.Valid: ", ret.Valid)
 	if !ret.Valid() {
 		errString := buffer.Buffer{}
 		for i, vErr := range ret.Errors() {
