@@ -100,6 +100,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Retries:       upstream.Retries,
 				Timeout:       upstream.Timeout,
 				Type:          upstream.Type,
+				Checks:        upstream.Checks,
 				HashOn:        upstream.HashOn,
 				Key:           upstream.Key,
 				Scheme:        upstream.Scheme,
@@ -118,33 +119,33 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		}
 
 		// fmt.Fprint(os.Stdout, "\nUPSTREAM isValide", isValide, checks)
-		ups.Checks = map[string]interface{}{
-			"active": map[string]interface{}{
-				"timeout":   float64(5),
-				"http_path": "/status",
-				"host":      "foo.com",
-				"healthy": map[string]interface{}{
-					"interval":  2,
-					"successes": 1,
-				},
-				"unhealthy": map[string]interface{}{
-					"interval":      1,
-					"http_failures": 2,
-				},
-				"req_headers": []interface{}{"User-Agent: curl/7.29.0"},
-			},
-			"passive": map[string]interface{}{
-				"healthy": map[string]interface{}{
-					"http_statuses": []interface{}{float64(200), float64(201)},
-					"successes":     float64(3),
-				},
-				"unhealthy": map[string]interface{}{
-					"http_statuses": []interface{}{float64(500)},
-					"http_failures": float64(3),
-					"tcp_failures":  float64(3),
-				},
-			},
-		}
+		// ups.Checks = map[string]interface{}{
+		// 	"active": map[string]interface{}{
+		// 		"timeout":   float64(5),
+		// 		"http_path": "/status",
+		// 		"host":      "foo.com",
+		// 		"healthy": map[string]interface{}{
+		// 			"interval":  2,
+		// 			"successes": 1,
+		// 		},
+		// 		"unhealthy": map[string]interface{}{
+		// 			"interval":      1,
+		// 			"http_failures": 2,
+		// 		},
+		// 		"req_headers": []interface{}{"User-Agent: curl/7.29.0"},
+		// 	},
+		// 	"passive": map[string]interface{}{
+		// 		"healthy": map[string]interface{}{
+		// 			"http_statuses": []interface{}{float64(200), float64(201)},
+		// 			"successes":     float64(3),
+		// 		},
+		// 		"unhealthy": map[string]interface{}{
+		// 			"http_statuses": []interface{}{float64(500)},
+		// 			"http_failures": float64(3),
+		// 			"tcp_failures":  float64(3),
+		// 		},
+		// 	},
+		// }
 
 		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
 		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks", upstream.Checks)
