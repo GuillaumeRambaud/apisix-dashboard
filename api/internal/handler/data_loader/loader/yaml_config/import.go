@@ -46,52 +46,52 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, upstream := range importData.Upstreams {
-		checks := entity.Checks{}
-		act := entity.Active{}
-		psv := entity.Passive{}
-		isValide := true
+		// checks := entity.Checks{}
+		// act := entity.Active{}
+		// psv := entity.Passive{}
+		// isValide := true
 
-		if upstream.Checks.Active.Type != "" {
-			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", upstream.Checks.Active.Type)
-			act = entity.Active{
-				Type:                   upstream.Checks.Active.Type,
-				Timeout:                upstream.Checks.Active.Timeout,
-				Concurrency:            upstream.Checks.Active.Concurrency,
-				Host:                   upstream.Checks.Active.Host,
-				Port:                   upstream.Checks.Active.Port,
-				HTTPPath:               upstream.Checks.Active.HTTPPath,
-				HTTPSVerifyCertificate: upstream.Checks.Active.HTTPSVerifyCertificate,
-				Healthy: entity.Healthy{
-					Interval:     1,
-					HttpStatuses: []int{200, 302},
-					Successes:    2,
-				},
-				UnHealthy: entity.UnHealthy{
-					Interval:     1,
-					HTTPStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
-					TCPFailures:  2,
-					Timeouts:     3,
-					HTTPFailures: 5},
-				ReqHeaders: upstream.Checks.Active.ReqHeaders,
-			}
-			checks.Active = act
-		} else {
-			isValide = false
-			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", isValide)
-		}
+		// if upstream.Checks.Active.Type != "" {
+		// 	fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", upstream.Checks.Active.Type)
+		// 	act = entity.Active{
+		// 		Type:                   upstream.Checks.Active.Type,
+		// 		Timeout:                upstream.Checks.Active.Timeout,
+		// 		Concurrency:            upstream.Checks.Active.Concurrency,
+		// 		Host:                   upstream.Checks.Active.Host,
+		// 		Port:                   upstream.Checks.Active.Port,
+		// 		HTTPPath:               upstream.Checks.Active.HTTPPath,
+		// 		HTTPSVerifyCertificate: upstream.Checks.Active.HTTPSVerifyCertificate,
+		// 		Healthy: entity.Healthy{
+		// 			Interval:     1,
+		// 			HttpStatuses: []int{200, 302},
+		// 			Successes:    2,
+		// 		},
+		// 		UnHealthy: entity.UnHealthy{
+		// 			Interval:     1,
+		// 			HTTPStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
+		// 			TCPFailures:  2,
+		// 			Timeouts:     3,
+		// 			HTTPFailures: 5},
+		// 		ReqHeaders: upstream.Checks.Active.ReqHeaders,
+		// 	}
+		// 	checks.Active = act
+		// } else {
+		// 	isValide = false
+		// 	fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", isValide)
+		// }
 
-		if upstream.Checks.Passive.Type != "" {
-			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", upstream.Checks.Passive.Type)
-			psv = entity.Passive{
-				Type:      upstream.Checks.Passive.Type,
-				Healthy:   upstream.Checks.Passive.Healthy,
-				UnHealthy: upstream.Checks.Passive.UnHealthy,
-			}
-			checks.Passive = psv
-		} else {
-			isValide = false
-			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", isValide)
-		}
+		// if upstream.Checks.Passive.Type != "" {
+		// 	fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", upstream.Checks.Passive.Type)
+		// 	psv = entity.Passive{
+		// 		Type:      upstream.Checks.Passive.Type,
+		// 		Healthy:   upstream.Checks.Passive.Healthy,
+		// 		UnHealthy: upstream.Checks.Passive.UnHealthy,
+		// 	}
+		// 	checks.Passive = psv
+		// } else {
+		// 	isValide = false
+		// 	fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", isValide)
+		// }
 
 		ups := entity.Upstream{
 			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
@@ -117,7 +117,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			},
 		}
 
-		fmt.Fprint(os.Stdout, "\nUPSTREAM isValide", isValide, checks)
+		// fmt.Fprint(os.Stdout, "\nUPSTREAM isValide", isValide, checks)
 		ups.Checks = map[string]interface{}{
 			"active": map[string]interface{}{
 				"timeout":   float64(5),
@@ -148,8 +148,8 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
 		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks", upstream.Checks)
-		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Active", upstream.Checks.Active)
-		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Passive", upstream.Checks.Passive)
+		// fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Active", upstream.Checks.Active)
+		// fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Passive", upstream.Checks.Passive)
 
 		transformModel.Upstreams = append(transformModel.Upstreams, ups)
 	}
