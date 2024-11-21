@@ -2615,6 +2615,19 @@
 			],
 			"properties": {
 				"checks": {
+					"anyOf": [
+						{
+							"required": [
+								"active"
+							]
+						},
+						{
+							"required": [
+								"active",
+								"passive"
+							]
+						}
+					],
 					"properties": {
 						"active": {
 							"properties": {
