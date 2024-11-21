@@ -52,6 +52,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		isValide := true
 
 		if upstream.Checks.Active.Type != "" {
+			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", upstream.Checks.Active.Type)
 			act = entity.Active{
 				Type:                   upstream.Checks.Active.Type,
 				Timeout:                upstream.Checks.Active.Timeout,
@@ -67,9 +68,11 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			checks.Active = act
 		} else {
 			isValide = false
+			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Active.Type", isValide)
 		}
 
 		if upstream.Checks.Passive.Type != "" {
+			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", upstream.Checks.Passive.Type)
 			psv = entity.Passive{
 				Type:      upstream.Checks.Passive.Type,
 				Healthy:   upstream.Checks.Passive.Healthy,
@@ -78,6 +81,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			checks.Passive = psv
 		} else {
 			isValide = false
+			fmt.Fprint(os.Stdout, "\nUPSTREAM Checks.Passive.Type", isValide)
 		}
 
 		ups := entity.Upstream{
@@ -87,7 +91,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Retries:       upstream.Retries,
 				Timeout:       upstream.Timeout,
 				Type:          upstream.Type,
-				Checks:        upstream.Checks,
 				HashOn:        upstream.HashOn,
 				Key:           upstream.Key,
 				Scheme:        upstream.Scheme,
@@ -105,9 +108,10 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			},
 		}
 
-		if isValide {
+
+			fmt.Fprint(os.Stdout, "\nUPSTREAM isValide", isValide, checks)
 			ups.Checks = checks
-		}
+		
 
 		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
 		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks", upstream.Checks)
