@@ -136,7 +136,7 @@ func TestYamlMapping2(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Len(t, data.Routes, 1)
-	assert.Len(t, data.Upstreams, 0)
+	assert.Len(t, data.Upstreams, 1)
 
 	// Upstream
 	// assert.Equal(t, "541206531396338380", data.Upstreams[0].ID)

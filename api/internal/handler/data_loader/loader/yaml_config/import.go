@@ -46,6 +46,36 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, upstream := range importData.Upstreams {
+		act := entity.Active{}
+		psv := entity.Passive{}
+
+		if upstream.Checks.Active.Timeout > 0 {
+			act = entity.Active{
+				Type:                   upstream.Checks.Active.Type,
+				Timeout:                upstream.Checks.Active.Timeout,
+				Concurrency:            upstream.Checks.Active.Concurrency,
+				Host:                   upstream.Checks.Active.Host,
+				Port:                   upstream.Checks.Active.Port,
+				HTTPPath:               upstream.Checks.Active.HTTPPath,
+				HTTPSVerifyCertificate: upstream.Checks.Active.HTTPSVerifyCertificate,
+				Healthy:                upstream.Checks.Active.Healthy,
+				UnHealthy:              upstream.Checks.Active.UnHealthy,
+				ReqHeaders:             upstream.Checks.Active.ReqHeaders,
+			}
+		}
+
+		if upstream.Checks.Passive.Type != "" {
+			psv = entity.Passive{
+				Type:      upstream.Checks.Passive.Type,
+				Healthy:   upstream.Checks.Passive.Healthy,
+				UnHealthy: upstream.Checks.Passive.UnHealthy,
+			}
+		}
+
+		checks := entity.Checks{
+			Active:  act,
+			Passive: psv,
+		}
 
 		ups := entity.Upstream{
 			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
@@ -71,7 +101,12 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				RetryTimeout:  upstream.RetryTimeout,
 			},
 		}
+
+		ups.Checks = checks
 		fmt.Fprint(os.Stdout, "\nUPSTREAM ", upstream)
+		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks", upstream.Checks)
+		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Active", upstream.Checks.Active)
+		fmt.Fprint(os.Stdout, "\nUPSTREAM Checks Passive", upstream.Checks.Passive)
 
 		transformModel.Upstreams = append(transformModel.Upstreams, ups)
 	}
