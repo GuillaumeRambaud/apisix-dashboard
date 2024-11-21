@@ -77,9 +77,9 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, route := range importData.Routes {
-		upstream := &entity.UpstreamDef{}
+		rte := entity.Route{}
 		if route.UpstreamID == nil {
-			upstream = &entity.UpstreamDef{
+			upstream := &entity.UpstreamDef{
 				Nodes:         route.Upstream.Nodes,
 				Retries:       route.Upstream.Retries,
 				Timeout:       route.Upstream.Timeout,
@@ -100,36 +100,62 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				KeepalivePool: route.Upstream.KeepalivePool,
 				RetryTimeout:  route.Upstream.RetryTimeout,
 			}
+
+			rte = entity.Route{
+				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
+				URI:             route.URI,
+				Uris:            route.Uris,
+				Name:            route.Name,
+				Desc:            route.Desc,
+				Priority:        route.Priority,
+				Methods:         route.Methods,
+				Host:            route.Host,
+				Hosts:           route.Hosts,
+				RemoteAddr:      route.RemoteAddr,
+				RemoteAddrs:     route.RemoteAddrs,
+				Vars:            route.Vars,
+				FilterFunc:      route.FilterFunc,
+				Script:          route.Script,
+				ScriptID:        route.ScriptID,
+				Plugins:         route.Plugins,
+				PluginConfigID:  route.PluginConfigID,
+				Upstream:        upstream,
+				ServiceID:       route.ServiceID,
+				UpstreamID:      route.UpstreamID,
+				ServiceProtocol: route.ServiceProtocol,
+				Labels:          route.Labels,
+				EnableWebsocket: route.EnableWebsocket,
+				Status:          route.Status,
+			}
+		} else {
+			rte = entity.Route{
+				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
+				URI:             route.URI,
+				Uris:            route.Uris,
+				Name:            route.Name,
+				Desc:            route.Desc,
+				Priority:        route.Priority,
+				Methods:         route.Methods,
+				Host:            route.Host,
+				Hosts:           route.Hosts,
+				RemoteAddr:      route.RemoteAddr,
+				RemoteAddrs:     route.RemoteAddrs,
+				Vars:            route.Vars,
+				FilterFunc:      route.FilterFunc,
+				Script:          route.Script,
+				ScriptID:        route.ScriptID,
+				Plugins:         route.Plugins,
+				PluginConfigID:  route.PluginConfigID,
+				ServiceID:       route.ServiceID,
+				UpstreamID:      route.UpstreamID,
+				ServiceProtocol: route.ServiceProtocol,
+				Labels:          route.Labels,
+				EnableWebsocket: route.EnableWebsocket,
+				Status:          route.Status,
+			}
 		}
 
 		// fmt.Fprint(os.Stdout, "\nupstreamupstream ", upstream)
-
-		rte := entity.Route{
-			BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
-			URI:             route.URI,
-			Uris:            route.Uris,
-			Name:            route.Name,
-			Desc:            route.Desc,
-			Priority:        route.Priority,
-			Methods:         route.Methods,
-			Host:            route.Host,
-			Hosts:           route.Hosts,
-			RemoteAddr:      route.RemoteAddr,
-			RemoteAddrs:     route.RemoteAddrs,
-			Vars:            route.Vars,
-			FilterFunc:      route.FilterFunc,
-			Script:          route.Script,
-			ScriptID:        route.ScriptID,
-			Plugins:         route.Plugins,
-			PluginConfigID:  route.PluginConfigID,
-			Upstream:        upstream,
-			ServiceID:       route.ServiceID,
-			UpstreamID:      route.UpstreamID,
-			ServiceProtocol: route.ServiceProtocol,
-			Labels:          route.Labels,
-			EnableWebsocket: route.EnableWebsocket,
-			Status:          route.Status,
-		}
 
 		transformModel.Routes = append(transformModel.Routes, rte)
 	}
