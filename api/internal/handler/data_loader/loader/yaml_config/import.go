@@ -77,28 +77,31 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	for _, route := range importData.Routes {
-
-		upstream := &entity.UpstreamDef{
-			Nodes:         route.Upstream.Nodes,
-			Retries:       route.Upstream.Retries,
-			Timeout:       route.Upstream.Timeout,
-			Type:          route.Upstream.Type,
-			Checks:        route.Upstream.Checks,
-			HashOn:        route.Upstream.HashOn,
-			Key:           route.Upstream.Key,
-			Scheme:        route.Upstream.Scheme,
-			DiscoveryType: route.Upstream.DiscoveryType,
-			DiscoveryArgs: route.Upstream.DiscoveryArgs,
-			PassHost:      route.Upstream.PassHost,
-			UpstreamHost:  route.Upstream.UpstreamHost,
-			Name:          route.Upstream.Name,
-			Desc:          route.Upstream.Desc,
-			ServiceName:   route.Upstream.ServiceName,
-			Labels:        route.Upstream.Labels,
-			TLS:           route.Upstream.TLS,
-			KeepalivePool: route.Upstream.KeepalivePool,
-			RetryTimeout:  route.Upstream.RetryTimeout,
+		upstream := &entity.UpstreamDef{}
+		if route.UpstreamID == nil {
+			upstream = &entity.UpstreamDef{
+				Nodes:         route.Upstream.Nodes,
+				Retries:       route.Upstream.Retries,
+				Timeout:       route.Upstream.Timeout,
+				Type:          route.Upstream.Type,
+				Checks:        route.Upstream.Checks,
+				HashOn:        route.Upstream.HashOn,
+				Key:           route.Upstream.Key,
+				Scheme:        route.Upstream.Scheme,
+				DiscoveryType: route.Upstream.DiscoveryType,
+				DiscoveryArgs: route.Upstream.DiscoveryArgs,
+				PassHost:      route.Upstream.PassHost,
+				UpstreamHost:  route.Upstream.UpstreamHost,
+				Name:          route.Upstream.Name,
+				Desc:          route.Upstream.Desc,
+				ServiceName:   route.Upstream.ServiceName,
+				Labels:        route.Upstream.Labels,
+				TLS:           route.Upstream.TLS,
+				KeepalivePool: route.Upstream.KeepalivePool,
+				RetryTimeout:  route.Upstream.RetryTimeout,
+			}
 		}
+
 		// fmt.Fprint(os.Stdout, "\nupstreamupstream ", upstream)
 
 		rte := entity.Route{
@@ -176,6 +179,5 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	fmt.Fprint(os.Stdout, "\nRoutes1 ", transformModel.Routes[0])
 	fmt.Fprint(os.Stdout, "\nRoutes2 ", transformModel.Routes[0].Upstream)
-	fmt.Fprint(os.Stdout, "\nRoutes3 ", transformModel.Routes[0].Upstream.Nodes)
 	return &transformModel, err
 }
