@@ -22,8 +22,6 @@ import (
 
 	"github.com/apisix/manager-api/internal/core/entity"
 	"github.com/apisix/manager-api/internal/handler/data_loader/loader"
-
-	// "gopkg.in/yaml.v2"
 	"gopkg.in/yaml.v3"
 )
 
