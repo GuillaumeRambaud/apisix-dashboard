@@ -53,7 +53,7 @@ type UpstreamImport struct {
 	Retries       *int                   `yaml:"retries,omitempty"`
 	Timeout       *Timeout               `yaml:"timeout,omitempty"`
 	Type          string                 `yaml:"type,omitempty"`
-	Checks        interface{}            `yaml:"checks"`
+	Checks        HealthChecker          `yaml:"checks"`
 	HashOn        string                 `yaml:"hash_on,omitempty"`
 	Key           string                 `yaml:"key,omitempty"`
 	Scheme        string                 `yaml:"scheme,omitempty"`
@@ -84,9 +84,4 @@ type ServiceImport struct {
 	Labels          map[string]string      `yaml:"labels,omitempty"`
 	EnableWebsocket bool                   `yaml:"enable_websocket,omitempty"`
 	Hosts           []string               `yaml:"hosts,omitempty"`
-}
-
-type Checks struct {
-	Active  Active  `yaml:"active"`
-	Passive Passive `yaml:"passive"`
 }

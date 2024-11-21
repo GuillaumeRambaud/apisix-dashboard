@@ -295,7 +295,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		transformModel.Services = append(transformModel.Services, svc)
 	}
 
-	fmt.Fprint(os.Stdout, "\nRoutes1 ", transformModel.Routes[0])
-	fmt.Fprint(os.Stdout, "\nRoutes2 ", transformModel.Routes[0].Upstream)
+	// fmt.Fprint(os.Stdout, "\nRoutes1 ", transformModel.Routes[0])
+	// fmt.Fprint(os.Stdout, "\nRoutes2 ", transformModel.Routes[0].Upstream)
 	return &transformModel, err
 }
