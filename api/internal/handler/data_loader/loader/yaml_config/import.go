@@ -46,11 +46,12 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, upstream := range importData.Upstreams {
+		checks := entity.Checks{}
 		act := entity.Active{}
 		psv := entity.Passive{}
 		isValide := true
 
-		if upstream.Checks.Active.Timeout > 0 {
+		if upstream.Checks.Active.Type != "" {
 			act = entity.Active{
 				Type:                   upstream.Checks.Active.Type,
 				Timeout:                upstream.Checks.Active.Timeout,
@@ -63,6 +64,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				UnHealthy:              upstream.Checks.Active.UnHealthy,
 				ReqHeaders:             upstream.Checks.Active.ReqHeaders,
 			}
+			checks.Active = act
 		} else {
 			isValide = false
 		}
@@ -73,13 +75,9 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Healthy:   upstream.Checks.Passive.Healthy,
 				UnHealthy: upstream.Checks.Passive.UnHealthy,
 			}
+			checks.Passive = psv
 		} else {
 			isValide = false
-		}
-
-		checks := entity.Checks{
-			Active:  act,
-			Passive: psv,
 		}
 
 		ups := entity.Upstream{
