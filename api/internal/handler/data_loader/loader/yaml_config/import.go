@@ -61,9 +61,18 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Port:                   upstream.Checks.Active.Port,
 				HTTPPath:               upstream.Checks.Active.HTTPPath,
 				HTTPSVerifyCertificate: upstream.Checks.Active.HTTPSVerifyCertificate,
-				Healthy:                upstream.Checks.Active.Healthy,
-				UnHealthy:              upstream.Checks.Active.UnHealthy,
-				ReqHeaders:             upstream.Checks.Active.ReqHeaders,
+				Healthy: entity.Healthy{
+					Interval:     1,
+					HttpStatuses: []int{200, 302},
+					Successes:    2,
+				},
+				UnHealthy: entity.UnHealthy{
+					Interval:     1,
+					HTTPStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
+					TCPFailures:  2,
+					Timeouts:     3,
+					HTTPFailures: 5},
+				ReqHeaders: upstream.Checks.Active.ReqHeaders,
 			}
 			checks.Active = act
 		} else {
