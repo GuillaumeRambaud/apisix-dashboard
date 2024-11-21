@@ -53,7 +53,7 @@ type UpstreamImport struct {
 	Retries       *int                   `yaml:"retries,omitempty"`
 	Timeout       *Timeout               `yaml:"timeout,omitempty"`
 	Type          string                 `yaml:"type,omitempty"`
-	Checks        Checks                 `yaml:"checks"`
+	Checks        interface{}            `yaml:"checks"`
 	HashOn        string                 `yaml:"hash_on,omitempty"`
 	Key           string                 `yaml:"key,omitempty"`
 	Scheme        string                 `yaml:"scheme,omitempty"`
