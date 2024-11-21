@@ -238,8 +238,10 @@ func (v *APISIXJsonSchemaValidator) Validate(obj interface{}) error {
 
 	fmt.Fprint(os.Stdout, "\nValidate obj", obj)
 	fmt.Fprint(os.Stdout, "\nValidate gojsonschema", v.schema)
-	
+
 	ret, err := v.schema.Validate(gojsonschema.NewGoLoader(obj))
+
+	fmt.Fprint(os.Stdout, "\nValidate err", err)
 	if err != nil {
 		log.Errorf("schema validate failed: %s, s: %v, obj: %v", err, v.schema, obj)
 		return fmt.Errorf("schema validate failed: %s", err)
