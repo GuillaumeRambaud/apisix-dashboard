@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"os"
 	"path"
 	"reflect"
 
@@ -132,7 +131,6 @@ func (h *ImportHandler) Import(c droplet.Context) (interface{}, error) {
 		if input.OverrideMethod == "true" {
 			isDeleted, err := h.DeleteConfigurations(c)
 
-			fmt.Fprint(os.Stdout, "\nAll configuration deleted:", isDeleted, " - ", err)
 			if err != nil || !isDeleted {
 				return nil, fmt.Errorf("Failed to deleted configuration !")
 			}
