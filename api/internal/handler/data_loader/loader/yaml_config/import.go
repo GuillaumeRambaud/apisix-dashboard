@@ -44,23 +44,173 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	}
 
 	transformModel := loader.DataSets{}
+	for _, upstream := range importData.Upstreams {
+		ups := entity.Upstream{
+			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
+			UpstreamDef: entity.UpstreamDef{
+				Nodes:         upstream.Nodes,
+				Retries:       upstream.Retries,
+				Timeout:       upstream.Timeout,
+				Type:          upstream.Type,
+				Checks:        upstream.Checks,
+				HashOn:        upstream.HashOn,
+				Key:           upstream.Key,
+				Scheme:        upstream.Scheme,
+				DiscoveryType: upstream.DiscoveryType,
+				DiscoveryArgs: upstream.DiscoveryArgs,
+				PassHost:      upstream.PassHost,
+				UpstreamHost:  upstream.UpstreamHost,
+				Name:          upstream.Name,
+				Desc:          upstream.Desc,
+				ServiceName:   upstream.ServiceName,
+				Labels:        upstream.Labels,
+				TLS:           upstream.TLS,
+				KeepalivePool: upstream.KeepalivePool,
+				RetryTimeout:  upstream.RetryTimeout,
+			},
+		}
+
+		transformModel.Upstreams = append(transformModel.Upstreams, ups)
+	}
+
+	for _, service := range importData.Services {
+		svc := entity.Service{}
+		if service.UpstreamID == nil {
+			upstream := &entity.UpstreamDef{
+				Nodes:         service.Upstream.Nodes,
+				Retries:       service.Upstream.Retries,
+				Timeout:       service.Upstream.Timeout,
+				Type:          service.Upstream.Type,
+				Checks:        service.Upstream.Checks,
+				HashOn:        service.Upstream.HashOn,
+				Key:           service.Upstream.Key,
+				Scheme:        service.Upstream.Scheme,
+				DiscoveryType: service.Upstream.DiscoveryType,
+				DiscoveryArgs: service.Upstream.DiscoveryArgs,
+				PassHost:      service.Upstream.PassHost,
+				UpstreamHost:  service.Upstream.UpstreamHost,
+				Name:          service.Upstream.Name,
+				Desc:          service.Upstream.Desc,
+				ServiceName:   service.Upstream.ServiceName,
+				Labels:        service.Upstream.Labels,
+				TLS:           service.Upstream.TLS,
+				KeepalivePool: service.Upstream.KeepalivePool,
+				RetryTimeout:  service.Upstream.RetryTimeout,
+			}
+
+			svc = entity.Service{
+				BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
+				Name:            service.Name,
+				Desc:            service.Desc,
+				Upstream:        upstream,
+				UpstreamID:      service.UpstreamID,
+				Plugins:         service.Plugins,
+				Script:          service.Script,
+				Labels:          service.Labels,
+				EnableWebsocket: service.EnableWebsocket,
+				Hosts:           service.Hosts,
+			}
+		} else {
+			svc = entity.Service{
+				BaseInfo:        entity.BaseInfo{ID: service.ID, CreateTime: service.CreateTime, UpdateTime: service.UpdateTime},
+				Name:            service.Name,
+				Desc:            service.Desc,
+				UpstreamID:      service.UpstreamID,
+				Plugins:         service.Plugins,
+				Script:          service.Script,
+				Labels:          service.Labels,
+				EnableWebsocket: service.EnableWebsocket,
+				Hosts:           service.Hosts,
+			}
+		}
+
+		transformModel.Services = append(transformModel.Services, svc)
+	}
+
 	for _, route := range importData.Routes {
-		transformModel.Routes = append(transformModel.Routes, route)
+		rte := entity.Route{}
+		if route.UpstreamID == nil {
+			upstream := &entity.UpstreamDef{
+				Nodes:         route.Upstream.Nodes,
+				Retries:       route.Upstream.Retries,
+				Timeout:       route.Upstream.Timeout,
+				Type:          route.Upstream.Type,
+				Checks:        route.Upstream.Checks,
+				HashOn:        route.Upstream.HashOn,
+				Key:           route.Upstream.Key,
+				Scheme:        route.Upstream.Scheme,
+				DiscoveryType: route.Upstream.DiscoveryType,
+				DiscoveryArgs: route.Upstream.DiscoveryArgs,
+				PassHost:      route.Upstream.PassHost,
+				UpstreamHost:  route.Upstream.UpstreamHost,
+				Name:          route.Upstream.Name,
+				Desc:          route.Upstream.Desc,
+				ServiceName:   route.Upstream.ServiceName,
+				Labels:        route.Upstream.Labels,
+				TLS:           route.Upstream.TLS,
+				KeepalivePool: route.Upstream.KeepalivePool,
+				RetryTimeout:  route.Upstream.RetryTimeout,
+			}
+
+			rte = entity.Route{
+				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
+				URI:             route.URI,
+				Uris:            route.Uris,
+				Name:            route.Name,
+				Desc:            route.Desc,
+				Priority:        route.Priority,
+				Methods:         route.Methods,
+				Host:            route.Host,
+				Hosts:           route.Hosts,
+				RemoteAddr:      route.RemoteAddr,
+				RemoteAddrs:     route.RemoteAddrs,
+				Vars:            route.Vars,
+				FilterFunc:      route.FilterFunc,
+				Script:          route.Script,
+				ScriptID:        route.ScriptID,
+				Plugins:         route.Plugins,
+				PluginConfigID:  route.PluginConfigID,
+				Upstream:        upstream,
+				ServiceID:       route.ServiceID,
+				UpstreamID:      route.UpstreamID,
+				ServiceProtocol: route.ServiceProtocol,
+				Labels:          route.Labels,
+				EnableWebsocket: route.EnableWebsocket,
+				Status:          route.Status,
+			}
+		} else {
+			rte = entity.Route{
+				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
+				URI:             route.URI,
+				Uris:            route.Uris,
+				Name:            route.Name,
+				Desc:            route.Desc,
+				Priority:        route.Priority,
+				Methods:         route.Methods,
+				Host:            route.Host,
+				Hosts:           route.Hosts,
+				RemoteAddr:      route.RemoteAddr,
+				RemoteAddrs:     route.RemoteAddrs,
+				Vars:            route.Vars,
+				FilterFunc:      route.FilterFunc,
+				Script:          route.Script,
+				ScriptID:        route.ScriptID,
+				Plugins:         route.Plugins,
+				PluginConfigID:  route.PluginConfigID,
+				ServiceID:       route.ServiceID,
+				UpstreamID:      route.UpstreamID,
+				ServiceProtocol: route.ServiceProtocol,
+				Labels:          route.Labels,
+				EnableWebsocket: route.EnableWebsocket,
+				Status:          route.Status,
+			}
+		}
+
+		transformModel.Routes = append(transformModel.Routes, rte)
 	}
 
 	for _, consumer := range importData.Consumers {
 		transformModel.Consumers = append(transformModel.Consumers, consumer)
-	}
-
-	for _, service := range importData.Services {
-		transformModel.Services = append(transformModel.Services, service)
-	}
-
-	for _, upstream := range importData.Upstreams {
-		transformModel.Upstreams = append(transformModel.Upstreams, entity.Upstream{
-			BaseInfo:    entity.BaseInfo{},
-			UpstreamDef: upstream,
-		})
 	}
 
 	return &transformModel, err
