@@ -514,39 +514,33 @@ func GetPathNumber() func() int {
 
 // ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
+	configuration := &loader.DataSetsExport{}
 
-	consumers, err := h.ConsumerList(c)
+	err := h.ConsumerList(c, configuration)
 	if err != nil {
 		return nil, err
 	}
 
-	routes, err := h.RouteList(c)
+	err = h.RouteList(c, configuration)
 	if err != nil {
 		return nil, err
 	}
 
-	upstreams, err := h.UpstreamList(c)
+	err = h.UpstreamList(c, configuration)
 	if err != nil {
 		return nil, err
 	}
 
-	services, err := h.ServiceList(c)
+	err = h.ServiceList(c, configuration)
 	if err != nil {
 		return nil, err
-	}
-
-	configuration := loader.DataSetsExport{
-		Consumers: consumers,
-		Routes:    routes,
-		Upstreams: upstreams,
-		Services:  services,
 	}
 
 	return configuration, nil
 }
 
 // ConsumerList Return all the consumers configurations
-func (h *Handler) ConsumerList(c droplet.Context) ([]*entity.Consumer, error) {
+func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) error {
 	consumers := []*entity.Consumer{}
 	consumerList, err := h.consumerStore.List(c.Context(), store.ListInput{
 		Predicate: func(obj interface{}) bool {
@@ -558,60 +552,205 @@ func (h *Handler) ConsumerList(c droplet.Context) ([]*entity.Consumer, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	for _, consumer := range consumerList.Rows {
 		consumers = append(consumers, consumer.(*entity.Consumer))
 	}
 
-	return consumers, err
+	conf.Consumers = consumers
+
+	return err
 }
 
 // routeList Return all the routes configurations
-func (h *Handler) RouteList(c droplet.Context) ([]*entity.Route, error) {
+func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
 	routes := []*entity.Route{}
+	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	for _, route := range routeList.Rows {
-		routes = append(routes, route.(*entity.Route))
+		ro, err := deepCopyRoute(route.(*entity.Route))
+		if err != nil {
+			return err
+		}
+		if ro.UpstreamID == nil {
+			variables, err = h.VariablizationOfNodeRoute(ro)
+		}
+
+		routes = append(routes, ro)
+
 	}
 
-	return routes, err
+	conf.Routes = routes
+	conf.Variables = append(conf.Variables, variables...)
+
+	return err
 }
 
 // UpstreamList Return all the upstreams configurations
-func (h *Handler) UpstreamList(c droplet.Context) ([]*entity.Upstream, error) {
+func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) error {
 	upstreams := []*entity.Upstream{}
+	variables := []*entity.Variable{}
+
 	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	for _, upstream := range upstreamList.Rows {
-		upstreams = append(upstreams, upstream.(*entity.Upstream))
+		up, err := deepCopyUpstream(upstream.(*entity.Upstream))
+		if err != nil {
+			return err
+		}
+		variables, err = h.VariablizationOfNodeUpstream(up)
+		upstreams = append(upstreams, up)
 	}
 
-	return upstreams, err
+	conf.Upstreams = upstreams
+	conf.Variables = append(conf.Variables, variables...)
+
+	return err
 }
 
 // ServiceList Return all the services configurations
-func (h *Handler) ServiceList(c droplet.Context) ([]*entity.Service, error) {
+func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) error {
 	services := []*entity.Service{}
+	variables := []*entity.Variable{}
 	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	for _, service := range serviceList.Rows {
+		se, err := deepCopyService(service.(*entity.Service))
+		if err != nil {
+			return err
+		}
+		if se.UpstreamID == nil {
+			variables, err = h.VariablizationOfNodeService(se)
+		}
+
 		services = append(services, service.(*entity.Service))
 	}
 
-	return services, err
+	conf.Services = services
+	conf.Variables = append(conf.Variables, variables...)
+
+	return err
+}
+
+func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) ([]*entity.Variable, error) {
+	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
+	variables := []*entity.Variable{}
+
+	for index, node := range nodes {
+		key := "Upstream." + up.Name + ".Host." + strconv.Itoa(index)
+		variables = append(variables, &entity.Variable{
+			Key:   key,
+			Value: node.Host,
+		})
+
+		node.Host = "${" + key + "}"
+	}
+	up.Nodes = nodes
+
+	return variables, err
+}
+
+func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Variable, error) {
+	variables := []*entity.Variable{}
+	up := &entity.UpstreamDef{}
+	up = se.Upstream
+
+	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
+
+	for index, node := range nodes {
+		key := "Service." + se.Name + ".Upstream.Host." + strconv.Itoa(index)
+		variables = append(variables, &entity.Variable{
+			Key:   key,
+			Value: node.Host,
+		})
+
+		node.Host = "${" + key + "}"
+	}
+
+	up.Nodes = nodes
+	return variables, err
+}
+
+func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variable, error) {
+	variables := []*entity.Variable{}
+	up := &entity.UpstreamDef{}
+	up = ro.Upstream
+
+	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
+
+	for index, node := range nodes {
+		key := "Route." + ro.Name + ".Upstream.Host." + strconv.Itoa(index)
+		variables = append(variables, &entity.Variable{
+			Key:   key,
+			Value: node.Host,
+		})
+
+		node.Host = "${" + key + "}"
+	}
+
+	up.Nodes = nodes
+	return variables, err
+}
+
+func deepCopyUpstream(src *entity.Upstream) (*entity.Upstream, error) {
+	// Serialize the source slice to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal upstreams: %w", err)
+	}
+
+	// Deserialize the JSON into a new slice
+	var dst *entity.Upstream
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal upstreams: %w", err)
+	}
+
+	return dst, nil
+}
+
+func deepCopyService(src *entity.Service) (*entity.Service, error) {
+	// Serialize the source slice to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal services: %w", err)
+	}
+
+	// Deserialize the JSON into a new slice
+	var dst *entity.Service
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal services: %w", err)
+	}
+
+	return dst, nil
+}
+
+func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
+	// Serialize the source slice to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal routes: %w", err)
+	}
+
+	// Deserialize the JSON into a new slice
+	var dst *entity.Route
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal routes: %w", err)
+	}
+
+	return dst, nil
 }

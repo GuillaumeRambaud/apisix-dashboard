@@ -39,6 +39,7 @@ type DataSetsExport struct {
 	Routes    []*entity.Route    `json:"routes,omitempty" yaml:"routes"`
 	Upstreams []*entity.Upstream `json:"upstreams,omitempty" yaml:"upstreams"`
 	Services  []*entity.Service  `json:"services,omitempty" yaml:"services"`
+	Variables []*entity.Variable `json:"variables,omitempty" yaml:"variables"`
 }
 
 type DataSetsImport struct {
@@ -46,6 +47,7 @@ type DataSetsImport struct {
 	Routes    []entity.RouteImport    `json:"routes,omitempty" yaml:"routes"`
 	Upstreams []entity.UpstreamImport `json:"upstreams,omitempty" yaml:"upstreams"`
 	Services  []entity.ServiceImport  `json:"services,omitempty" yaml:"services"`
+	Variables []*entity.Variable      `json:"variables,omitempty" yaml:"variables"`
 }
 
 // Loader provide data loader abstraction
