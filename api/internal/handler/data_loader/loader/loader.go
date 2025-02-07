@@ -50,13 +50,6 @@ type DataSetsImport struct {
 	Variables []*entity.Variable      `json:"variables,omitempty" yaml:"variables"`
 }
 
-type DataSetsImport struct {
-	Consumers []entity.Consumer       `json:"consumers,omitempty" yaml:"consumers"`
-	Routes    []entity.RouteImport    `json:"routes,omitempty" yaml:"routes"`
-	Upstreams []entity.UpstreamImport `json:"upstreams,omitempty" yaml:"upstreams"`
-	Services  []entity.ServiceImport  `json:"services,omitempty" yaml:"services"`
-}
-
 // Loader provide data loader abstraction
 type Loader interface {
 	// Import accepts data and converts it into entity data sets
