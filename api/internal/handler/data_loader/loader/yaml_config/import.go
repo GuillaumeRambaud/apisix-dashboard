@@ -45,10 +45,21 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	transformModel := loader.DataSets{}
 	for _, upstream := range importData.Upstreams {
+
+		// Replace the variable with the actual value
+		nodes := []*entity.Node{}
+		for _, node := range upstream.Nodes {
+			variable := getVariable(importData.Variables, node.Host)
+			if variable != nil {
+				node.Host = variable.Value
+			}
+			nodes = append(nodes, &node)
+		}
+
 		ups := entity.Upstream{
 			BaseInfo: entity.BaseInfo{ID: upstream.ID, CreateTime: upstream.CreateTime, UpdateTime: upstream.UpdateTime},
 			UpstreamDef: entity.UpstreamDef{
-				Nodes:         upstream.Nodes,
+				Nodes:         nodes,
 				Retries:       upstream.Retries,
 				Timeout:       upstream.Timeout,
 				Type:          upstream.Type,
@@ -76,8 +87,18 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	for _, service := range importData.Services {
 		svc := entity.Service{}
 		if service.UpstreamID == nil {
+
+			nodes := []*entity.Node{}
+			for _, node := range service.Upstream.Nodes {
+				variable := getVariable(importData.Variables, node.Host)
+				if variable != nil {
+					node.Host = variable.Value
+				}
+				nodes = append(nodes, &node)
+			}
+
 			upstream := &entity.UpstreamDef{
-				Nodes:         service.Upstream.Nodes,
+				Nodes:         nodes,
 				Retries:       service.Upstream.Retries,
 				Timeout:       service.Upstream.Timeout,
 				Type:          service.Upstream.Type,
@@ -130,8 +151,19 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 	for _, route := range importData.Routes {
 		rte := entity.Route{}
 		if route.UpstreamID == nil {
+
+			// Replace the variable with the actual value
+			nodes := []*entity.Node{}
+			for _, node := range route.Upstream.Nodes {
+				variable := getVariable(importData.Variables, node.Host)
+				if variable != nil {
+					node.Host = variable.Value
+				}
+				nodes = append(nodes, &node)
+			}
+
 			upstream := &entity.UpstreamDef{
-				Nodes:         route.Upstream.Nodes,
+				Nodes:         nodes,
 				Retries:       route.Upstream.Retries,
 				Timeout:       route.Upstream.Timeout,
 				Type:          route.Upstream.Type,
@@ -209,9 +241,16 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 		transformModel.Routes = append(transformModel.Routes, rte)
 	}
 
-	for _, consumer := range importData.Consumers {
-		transformModel.Consumers = append(transformModel.Consumers, consumer)
-	}
+	transformModel.Consumers = append(transformModel.Consumers, importData.Consumers...)
 
 	return &transformModel, err
+}
+
+func getVariable(variables []*entity.Variable, name string) *entity.Variable {
+	for _, v := range variables {
+		if "${"+v.Key+"}" == name {
+			return v
+		}
+	}
+	return nil
 }

@@ -313,3 +313,8 @@ type SystemConfig struct {
 	CreateTime int64                  `json:"create_time,omitempty" yaml:"create_time"`
 	UpdateTime int64                  `json:"update_time,omitempty" yaml:"update_time"`
 }
+
+type Variable struct {
+	Key   string `json:"key" yaml:"key"`
+	Value string `json:"value" yaml:"value"`
+}

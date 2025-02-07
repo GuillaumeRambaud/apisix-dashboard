@@ -78,6 +78,7 @@ type Configuration struct {
 var (
 	TestDataset  = "../../../../../test/testdata/import/dataset.yaml"
 	TestDataset2 = "../../../../../test/testdata/import/dataset2.yaml"
+	TestDataset3 = "../../../../../test/testdata/import/dataset3.yaml"
 )
 
 // Test API 101 on MergeMethod mode
@@ -141,4 +142,31 @@ func TestYamlMapping2(t *testing.T) {
 	// Upstream
 	// assert.Equal(t, "541206531396338380", data.Upstreams[0].ID)
 	// assert.Equal(t, "roundrobin", data.Upstreams[0].Type)
+}
+
+func TestYamlMapping3(t *testing.T) {
+	fileContent, err := ioutil.ReadFile(TestDataset3)
+	assert.NoError(t, err)
+
+	l := &Loader{OverrideMethod: true, TaskName: "test"}
+	config, err := l.Import(fileContent)
+	assert.NoError(t, err)
+
+	// Print the parsed data
+	// fmt.Fprint(os.Stdout, "Parsed Configuration: \n", config)
+
+	// Accessing common fields
+	for _, route := range config.Routes {
+		fmt.Fprintf(os.Stdout, "Route ID: %s, %d, %d\n", route.ID, route.CreateTime, route.UpdateTime)
+	}
+
+	for _, upstream := range config.Upstreams {
+		fmt.Fprintf(os.Stdout, "Upstream ID: %s, %s\n", upstream.Name, upstream.Nodes)
+
+		// for _, node := range upstream.Nodes {
+		// 	fmt.Fprintf(os.Stdout, "Upstream Node: %s\n", node.Host)
+		// }
+	}
+
+	assert.Len(t, config.Routes, 1)
 }
