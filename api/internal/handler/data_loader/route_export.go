@@ -582,7 +582,8 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		if err != nil {
 			return err
 		}
-		if ro.UpstreamID == nil {
+
+		if ro.Upstream != nil {
 			variables, err = h.VariablizationOfNodeRoute(ro)
 		}
 
