@@ -552,7 +552,6 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 		},
 	})
 
-	fmt.Fprintf(os.Stdout, "%-8s: %s\n", "ConsumerList", err)
 	if err != nil {
 		conf.Consumers = consumers
 		return err
