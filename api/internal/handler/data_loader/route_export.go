@@ -582,11 +582,10 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		}
 
 		if ro.Upstream != nil {
-			variables, err = h.VariablizationOfNodeRoute(ro)
+			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
 		routes = append(routes, ro)
-
 	}
 
 	conf.Routes = routes
@@ -688,7 +687,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Var
 	return variables, err
 }
 
-func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable {
 	variables := []*entity.Variable{}
 	up := &entity.UpstreamDef{}
 	up = ro.Upstream
@@ -706,7 +705,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variabl
 	}
 
 	up.Nodes = nodes
-	return variables, err
+	return variables
 }
 
 func deepCopyUpstream(src *entity.Upstream) (*entity.Upstream, error) {
