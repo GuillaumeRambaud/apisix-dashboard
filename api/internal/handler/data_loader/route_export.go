@@ -610,7 +610,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 		if err != nil {
 			return err
 		}
-		variables, err = h.VariablizationOfNodeUpstream(up)
+		variables = append(variables, h.VariablizationOfNodeUpstream(up)...)
 		upstreams = append(upstreams, up)
 	}
 
@@ -636,7 +636,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 			return err
 		}
 		if se.UpstreamID == nil {
-			variables, err = h.VariablizationOfNodeService(se)
+			variables = append(variables, h.VariablizationOfNodeService(se)...)
 		}
 
 		services = append(services, service.(*entity.Service))
@@ -648,12 +648,12 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	return err
 }
 
-func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) []*entity.Variable {
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 	variables := []*entity.Variable{}
 
 	for index, node := range nodes {
-		key := "Upstream." + up.Name + ".Host." + strconv.Itoa(index)
+		key := "Upstream." + up.Name + "_" + up.ID.(string) + ".Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
@@ -663,10 +663,10 @@ func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) ([]*entity.V
 	}
 	up.Nodes = nodes
 
-	return variables, err
+	return variables
 }
 
-func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeService(se *entity.Service) []*entity.Variable {
 	variables := []*entity.Variable{}
 	up := &entity.UpstreamDef{}
 	up = se.Upstream
@@ -674,7 +674,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Var
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := "Service." + se.Name + ".Upstream.Host." + strconv.Itoa(index)
+		key := "Service." + se.Name + "_" + se.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
@@ -684,7 +684,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Var
 	}
 
 	up.Nodes = nodes
-	return variables, err
+	return variables
 }
 
 func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable {
@@ -695,7 +695,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := "Route." + ro.Name + ".Upstream.Host." + strconv.Itoa(index)
+		key := "Route." + ro.Name + "_" + ro.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
