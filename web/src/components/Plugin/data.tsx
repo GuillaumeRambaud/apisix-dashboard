@@ -331,4 +331,7 @@ export const PLUGIN_LIST = {
   'cas-auth': {
     type: PluginType.authentication,
   },
+  '3ds-cas-auth': {
+    type: PluginType.authentication,
+  },
 };
