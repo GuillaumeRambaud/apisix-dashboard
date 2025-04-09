@@ -7989,6 +7989,36 @@
 			},
 			"version": 0.1
 		},
+		"onbehalf-jwt": {
+			"priority": 1000,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+					"issuer": {
+						"type": "string"
+					},
+					"subject": {
+						"type": "string"
+					},
+					"legal_entity_id": {
+						"type": "string",
+						"default": ""
+					},
+					"secret": {
+						"type": "string",
+						"default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
+					}
+				},
+				"required": [
+					"issuer",
+					"subject",
+					"legal_entity_id",
+					"secret"
+				],
+				"type": "object"
+			},
+			"version": 0.1
+		},
 		"prometheus": {
 			"priority": 500,
 			"schema": {
