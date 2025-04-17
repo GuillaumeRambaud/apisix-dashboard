@@ -667,6 +667,57 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			}
 		}
 
+		//Variablization of plugins
+		if ro.Plugins != nil {
+			for plugin := range ro.Plugins {
+				log.Infof("Check Loop!")
+				//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
+					if ro.Plugins[plugin] != nil {
+						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								if key == "secret" {
+									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
+								}
+
+								if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
+									newSecret := "Route." + ro.Name + ".Plugin.3dsCasAuth." + key
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if ro.Plugins != nil {
+			fmt.Fprintf(os.Stdout, "Plugins " + ro.Plugins)
+
+			plugins, err := json.Marshal(ro.Plugins)
+			if err != nil {
+				log.Errorf("json marshal failed: %s", err)
+			}
+			// Convert the plugins to a map[string]interface{} type
+			var pluginMap map[string]interface{}
+			err = json.Unmarshal(plugins, &pluginMap)
+			if err != nil {
+				log.Errorf("json marshal failed: %s", err)
+			}
+			fmt.Fprintf(os.Stdout, "pluginMap " + ro.pluginMap)
+			
+
 		routes = append(routes, ro)
 	}
 
