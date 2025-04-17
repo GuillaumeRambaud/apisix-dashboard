@@ -715,6 +715,22 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 					if ro.Plugins[plugin] != nil {
 						log.Infof("Check Plugins2: %s", ro.Plugins[plugin])
+
+						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								log.Infof("Key: %s, Value: %v\n", key, value)
+								fmt.Printf("Key: %s, Value: %v\n", key, value)
+							
+								// If the value is a nested map, you can assert its type
+								if nestedMap, ok := value.(map[string]interface{}); ok {
+									log.Infof("  Nested Map:")
+									fmt.Println("  Nested Map:")
+									for nestedKey, nestedValue := range nestedMap {
+										log.Infof("    %s: %v\n", nestedKey, nestedValue)
+										fmt.Printf("    %s: %v\n", nestedKey, nestedValue)
+									}
+								}
+						}
 					}
 				}
 			}
