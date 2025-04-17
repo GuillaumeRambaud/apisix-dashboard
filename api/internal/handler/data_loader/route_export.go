@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -516,7 +515,6 @@ func GetPathNumber() func() int {
 // ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
 	configuration := &loader.DataSetsExport{}
-	fmt.Fprint(os.Stdout, "Check ExportConfiguration ")
 
 	err := h.ConsumerList(c, configuration)
 	if err != nil {
@@ -569,8 +567,6 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
-	fmt.Fprint(os.Stdout, "Check RouteList")
-	log.Infof("Check RouteList!")
 	routes := []*entity.Route{}
 	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
@@ -613,34 +609,27 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
-		fmt.Fprint(os.Stdout, "Check Plugins")
-		log.Infof("Check Plugins!")
 		if ro.Plugins != nil {
-
 			for plugin := range ro.Plugins {
 				log.Infof("Check Loop!")
 				if plugin == "onbehalf-jwt" {
-					log.Infof("Check Loop onbehalf-jwt!")
-					log.Infof("Check Plugins: %s", plugin)
-
 					if ro.Plugins[plugin] != nil {
-						log.Infof("Check Plugins2: %s", ro.Plugins[plugin])
-
 						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
 								if key == "secret" {
-									newSecret := "REDACTED" // or whatever new value you want
-									pluginMap[key] = newSecret
-									log.Infof("Replaced secret with: %v", newSecret)
+									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf" // or whatever new value you want
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
 								}
-								log.Infof("Key: %s, Value: %v\n", key, value)
-								fmt.Printf("Key: %s, Value: %v\n", key, value)
 							}
 						}
 					}
 				}
 			}
-
 		}
 
 		routes = append(routes, ro)
