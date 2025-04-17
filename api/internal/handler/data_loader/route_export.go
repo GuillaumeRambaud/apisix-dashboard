@@ -720,7 +720,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 							for key, value := range pluginMap {
 								log.Infof("Key: %s, Value: %v\n", key, value)
 								fmt.Printf("Key: %s, Value: %v\n", key, value)
-							
+
 								// If the value is a nested map, you can assert its type
 								if nestedMap, ok := value.(map[string]interface{}); ok {
 									log.Infof("  Nested Map:")
@@ -747,7 +747,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			if err != nil {
 				log.Errorf("json marshal failed: %s", err)
 			}
-			// fmt.Fprintf(os.Stdout, "pluginMap "+ro.pluginMap)
+
 		}
 
 		routes = append(routes, ro)
