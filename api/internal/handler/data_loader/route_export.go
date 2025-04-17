@@ -711,6 +711,8 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 				log.Infof("Check Loop!")
 				if plugin == "onbehalf-jwt" {
 					log.Infof("Check Loop onbehalf-jwt!")
+					log.Infof("Check Plugins: %s", plugin)
+
 					if ro.Plugins[plugin] != nil {
 					}
 				}
