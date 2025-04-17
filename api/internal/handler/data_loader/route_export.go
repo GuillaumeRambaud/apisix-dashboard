@@ -604,9 +604,26 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			}
 		}
 
+		//Variablization of route upstream
 		if ro.Upstream != nil {
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
+
+		if ro.Plugins != nil {
+			fmt.Fprintf(os.Stdout, "Plugins " + ro.Plugins)
+
+			plugins, err := json.Marshal(ro.Plugins)
+			if err != nil {
+				log.Errorf("json marshal failed: %s", err)
+			}
+			// Convert the plugins to a map[string]interface{} type
+			var pluginMap map[string]interface{}
+			err = json.Unmarshal(plugins, &pluginMap)
+			if err != nil {
+				log.Errorf("json marshal failed: %s", err)
+			}
+			fmt.Fprintf(os.Stdout, "pluginMap " + ro.pluginMap)
+			
 
 		routes = append(routes, ro)
 	}
