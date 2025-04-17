@@ -706,6 +706,15 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		}
 
 		if ro.Plugins != nil {
+
+			for plugin := range ro.Plugins {
+				log.Infof("Check Loop!")
+				if plugin == "onbehalf-jwt" {
+					log.Infof("Check Loop onbehalf-jwt!")
+					if ro.Plugins[plugin] != nil {
+					}
+				}
+			}
 			pluginsStr, _ := json.Marshal(ro.Plugins)
 			fmt.Fprintf(os.Stdout, "Plugins "+string(pluginsStr))
 
