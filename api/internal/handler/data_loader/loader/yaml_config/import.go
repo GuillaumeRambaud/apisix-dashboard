@@ -184,6 +184,23 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				RetryTimeout:  route.Upstream.RetryTimeout,
 			}
 
+			if route.Plugins != nil {
+				for plugin := range route.Plugins {
+					if plugin == "onbehalf-jwt" {
+						if route.Plugins[plugin] != nil {
+							if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
+								for key, value := range pluginMap {
+									variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
+									if variable != nil {
+										pluginMap[key] = variable.Value
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			rte = entity.Route{
 				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
 				URI:             route.URI,
