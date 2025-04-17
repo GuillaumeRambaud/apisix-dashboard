@@ -610,6 +610,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
+		fmt.Fprintf(os.Stdout, "Check Plugins")
 		if ro.Plugins != nil {
 			pluginsStr, _ := json.Marshal(ro.Plugins)
 			fmt.Fprintf(os.Stdout, "Plugins "+string(pluginsStr))
