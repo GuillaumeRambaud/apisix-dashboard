@@ -39,6 +39,7 @@ const RequestConfigView: React.FC<RouteModule.Step1PassProps> = ({ form, disable
           <div>
             <Form.Item
               label={formatMessage({ id: 'page.route.host' })}
+              required
               tooltip={formatMessage({ id: 'page.route.form.itemExtraMessage.domain' })}
               style={{ marginBottom: 0 }}
             >
@@ -49,6 +50,12 @@ const RequestConfigView: React.FC<RouteModule.Step1PassProps> = ({ form, disable
                       {...field}
                       validateTrigger={['onChange', 'onBlur']}
                       rules={[
+                        {
+                          required: true,
+                          message: formatMessage({
+                            id: 'page.route.configuration.host.rules.required.placeholder',
+                          }),
+                        },
                         {
                           // NOTE: https://github.com/apache/apisix/blob/master/apisix/schema_def.lua#L40
                           pattern: new RegExp(/^\*?[0-9a-zA-Z-._]+$/, 'g'),
