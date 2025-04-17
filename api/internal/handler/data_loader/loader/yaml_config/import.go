@@ -200,6 +200,13 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 					}
 				}
 			}
+			host := route.Host
+			if route.Host != "" {
+				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
+				if variable != nil {
+					host = variable.Value
+				}
+			}
 
 			rte = entity.Route{
 				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
@@ -209,7 +216,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Desc:            route.Desc,
 				Priority:        route.Priority,
 				Methods:         route.Methods,
-				Host:            route.Host,
+				Host:            host,
 				Hosts:           route.Hosts,
 				RemoteAddr:      route.RemoteAddr,
 				RemoteAddrs:     route.RemoteAddrs,
