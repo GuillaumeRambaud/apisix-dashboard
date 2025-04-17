@@ -1102,7 +1102,8 @@ func TestExportRoutesCreateByLabel(t *testing.T) {
 }
 
 // 10.Create a service with label data and a route without label data, and export the route.
-//  Label is the data of the service
+//
+//	Label is the data of the service
 func TestExportRoutesCreateByLabel2(t *testing.T) {
 	input := &ExportInput{IDs: "1"}
 	s := `{
@@ -1598,7 +1599,7 @@ func TestExportRoutesAll(t *testing.T) {
 	assert.True(t, getCalled)
 }
 
-//15.Create service according to upstream1 ID
+// 15.Create service according to upstream1 ID
 // Create route according to upstream2 ID and service ID
 func TestExportRoutesCreateByUpstreamIDAndServiceID2(t *testing.T) {
 	input := &ExportInput{IDs: "1"}
@@ -2402,4 +2403,135 @@ func replaceStr(str string) string {
 	str = strings.Replace(str, "\t", "", -1)
 	str = strings.Replace(str, " ", "", -1)
 	return str
+}
+
+// 1.Export data as the route of URIs Hosts
+func TestExportRoutesPlugin(t *testing.T) {
+	input := &ExportInput{IDs: "1"}
+	//*entity.Route
+	r1 := `{
+		"name": "aaaa",
+		"labels": {
+			"build":"16",
+			"env":"production",
+			"version":"v2"
+		},
+		"plugins": {
+			"onbehalf-jwt": {
+				"issuer": "3DX4SALES_PARTNER",
+				"legal_entity_id": "200000000965427",
+				"secret": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg=",
+				"subject": "X-USER"
+			},
+			"proxy-rewrite" : {
+				"uri": "/movie"
+			}
+        
+		},
+		"status": 1,
+		"uris": ["/hello_"],
+		"hosts": ["foo.com", "*.bar.com"],
+		"methods": ["GET", "POST"],
+		"upstream": {
+			"nodes": {
+				"172.16.238.20:1980": 1
+			},
+			"type": "roundrobin"
+		}
+	}`
+
+	exportR1 := `{
+		"components": {},
+		"info": {
+			"title": "RoutesExport",
+			"version": "3.0.0"
+		},
+		"openapi": "3.0.0",
+		"paths": {
+			"/hello_": {
+				"get": {
+					"operationId": "aaaaGET",
+					"requestBody": {},
+					"responses": {
+						"default": {
+							"description": ""
+						}
+					},
+					"security": [],
+					"x-apisix-enable_websocket": false,
+					"x-apisix-hosts": ["foo.com", "*.bar.com"],
+					"x-apisix-labels": {
+						"build": "16",
+						"env": "production",
+						"version": "v2"
+					},
+					"x-apisix-plugins": {
+						"limit-count": {
+							"count": 2,
+							"key": "remote_addr",
+							"rejected_code": 503,
+							"time_window": 60
+						}
+					},
+					"x-apisix-priority": 0,
+					"x-apisix-status": 1,
+					"x-apisix-upstream": {
+						"nodes": {
+							"172.16.238.20:1980": 1
+						},
+						"type": "roundrobin"
+					}
+				},
+				"post": {
+					"operationId": "aaaaPOST",
+					"requestBody": {},
+					"responses": {
+						"default": {
+							"description": ""
+						}
+					},
+					"security": [],
+					"x-apisix-enable_websocket": false,
+					"x-apisix-hosts": ["foo.com", "*.bar.com"],
+					"x-apisix-labels": {
+						"build": "16",
+						"env": "production",
+						"version": "v2"
+					},
+					"x-apisix-plugins": {
+						"limit-count": {
+							"count": 2,
+							"key": "remote_addr",
+							"rejected_code": 503,
+							"time_window": 60
+						}
+					},
+					"x-apisix-priority": 0,
+					"x-apisix-status": 1,
+					"x-apisix-upstream": {
+						"nodes": {
+							"172.16.238.20:1980": 1
+						},
+						"type": "roundrobin"
+					}
+				}
+			}
+		}
+	}`
+	var route *entity.Route
+	err := json.Unmarshal([]byte(r1), &route)
+	mStore := &store.MockInterface{}
+	mStore.On("Get", mock.Anything).Run(func(args mock.Arguments) {
+	}).Return(route, nil)
+
+	h := Handler{routeStore: mStore}
+	ctx := droplet.NewContext()
+	ctx.SetInput(input)
+
+	ret, err := h.ExportConfiguration(ctx)
+	assert.Nil(t, err)
+	ret1, err := json.Marshal(ret)
+	assert.Nil(t, err)
+	assert.Equal(t, replaceStr(exportR1), string(ret1))
+	assert.NotNil(t, ret1)
 }

@@ -516,6 +516,7 @@ func GetPathNumber() func() int {
 // ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
 	configuration := &loader.DataSetsExport{}
+	fmt.Fprintf(os.Stdout, "Check ExportConfiguration ")
 
 	err := h.ConsumerList(c, configuration)
 	if err != nil {
@@ -568,6 +569,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
+	fmt.Fprintf(os.Stdout, "Check RouteList ")
 	routes := []*entity.Route{}
 	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
@@ -610,7 +612,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
-		fmt.Fprintf(os.Stdout, "Check Plugins")
+		fmt.Fprintf(os.Stdout, "Check Plugins ")
 		if ro.Plugins != nil {
 			pluginsStr, _ := json.Marshal(ro.Plugins)
 			fmt.Fprintf(os.Stdout, "Plugins "+string(pluginsStr))
