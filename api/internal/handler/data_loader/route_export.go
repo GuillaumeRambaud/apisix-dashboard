@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -710,12 +709,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			for plugin := range ro.Plugins {
 				log.Infof("Check Loop!")
 				if plugin == "onbehalf-jwt" {
-					log.Infof("Check Loop onbehalf-jwt!")
-					log.Infof("Check Plugins: %s", plugin)
-
 					if ro.Plugins[plugin] != nil {
-						log.Infof("Check Plugins2: %s", ro.Plugins[plugin])
-
 						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
 								if key == "secret" {
