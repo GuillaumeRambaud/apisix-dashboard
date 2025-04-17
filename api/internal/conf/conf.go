@@ -58,7 +58,7 @@ var (
 	SSLCert          string
 	SSLKey           string
 	ETCDConfig       *Etcd
-	ErrorLogLevel    = "warn"
+	ErrorLogLevel    = "info"
 	ErrorLogPath     = "logs/error.log"
 	AccessLogPath    = "logs/access.log"
 	UserList         = make(map[string]User, 2)
