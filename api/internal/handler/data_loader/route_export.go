@@ -714,6 +714,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 					log.Infof("Check Plugins: %s", plugin)
 
 					if ro.Plugins[plugin] != nil {
+						log.Infof("Check Plugins2: %s", ro.Plugins[plugin])
 					}
 				}
 			}
