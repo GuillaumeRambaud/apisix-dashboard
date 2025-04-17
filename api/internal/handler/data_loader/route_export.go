@@ -704,7 +704,8 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		}
 
 		if ro.Plugins != nil {
-			fmt.Fprintf(os.Stdout, "Plugins "+ro.Plugins)
+			pluginsStr, _ := json.Marshal(ro.Plugins)
+			fmt.Fprintf(os.Stdout, "Plugins "+string(pluginsStr))
 
 			plugins, err := json.Marshal(ro.Plugins)
 			if err != nil {
@@ -716,7 +717,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			if err != nil {
 				log.Errorf("json marshal failed: %s", err)
 			}
-			fmt.Fprintf(os.Stdout, "pluginMap "+ro.pluginMap)
+			// fmt.Fprintf(os.Stdout, "pluginMap "+ro.pluginMap)
 		}
 
 		routes = append(routes, ro)
