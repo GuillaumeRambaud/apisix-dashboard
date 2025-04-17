@@ -569,7 +569,8 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
-	fmt.Fprint(os.Stdout, "Check RouteList ")
+	fmt.Fprint(os.Stdout, "Check RouteList")
+	log.Infof("Check RouteList!")
 	routes := []*entity.Route{}
 	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
@@ -612,9 +613,11 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
-		fmt.Fprint(os.Stdout, "Check Plugins ")
+		fmt.Fprint(os.Stdout, "Check Plugins")
+		log.Infof("Check Plugins!")
 		if ro.Plugins != nil {
 			pluginsStr, _ := json.Marshal(ro.Plugins)
+			log.Infof("Check Plugins: %s", pluginsStr)
 			fmt.Fprint(os.Stdout, "Plugins "+string(pluginsStr))
 
 			plugins, err := json.Marshal(ro.Plugins)
