@@ -585,7 +585,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route host
 		if ro.Host != "" {
-			key := "Host"
+			key := ro.Name + ".Host"
 			variables = append(variables, &entity.Variable{
 				Key:   key,
 				Value: ro.Host,
@@ -596,7 +596,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
-				key := "Hosts" + strconv.Itoa(index)
+				key := ro.Name + ".Hosts" + strconv.Itoa(index)
 				variables = append(variables, &entity.Variable{
 					Key:   key,
 					Value: host,
