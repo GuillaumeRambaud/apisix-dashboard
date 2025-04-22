@@ -609,15 +609,27 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
+		//Variablization of plugins
 		if ro.Plugins != nil {
 			for plugin := range ro.Plugins {
 				log.Infof("Check Loop!")
-				if plugin == "onbehalf-jwt" {
+				//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
 					if ro.Plugins[plugin] != nil {
 						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
 								if key == "secret" {
-									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf" // or whatever new value you want
+									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
+								}
+
+								if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
+									newSecret := "Route." + ro.Name + ".Plugin.3dsCasAuth." + key
 									pluginMap[key] = "${" + newSecret + "}"
 
 									variables = append(variables, &entity.Variable{

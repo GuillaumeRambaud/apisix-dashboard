@@ -186,7 +186,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 			if route.Plugins != nil {
 				for plugin := range route.Plugins {
-					if plugin == "onbehalf-jwt" {
+					if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
 						if route.Plugins[plugin] != nil {
 							if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
 								for key, value := range pluginMap {
@@ -200,7 +200,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 					}
 				}
 			}
-			
+
 			host := route.Host
 			if route.Host != "" {
 				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
