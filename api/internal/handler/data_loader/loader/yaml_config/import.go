@@ -200,7 +200,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 					}
 				}
 			}
-			
+
 			host := route.Host
 			if route.Host != "" {
 				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
