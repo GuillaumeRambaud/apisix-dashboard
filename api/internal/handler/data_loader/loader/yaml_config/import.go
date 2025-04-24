@@ -184,6 +184,31 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				RetryTimeout:  route.Upstream.RetryTimeout,
 			}
 
+			if route.Plugins != nil {
+				for plugin := range route.Plugins {
+					if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
+						if route.Plugins[plugin] != nil {
+							if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
+								for key, value := range pluginMap {
+									variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
+									if variable != nil {
+										pluginMap[key] = variable.Value
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			host := route.Host
+			if route.Host != "" {
+				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
+				if variable != nil {
+					host = variable.Value
+				}
+			}
+
 			rte = entity.Route{
 				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
 				URI:             route.URI,
@@ -192,7 +217,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Desc:            route.Desc,
 				Priority:        route.Priority,
 				Methods:         route.Methods,
-				Host:            route.Host,
+				Host:            host,
 				Hosts:           route.Hosts,
 				RemoteAddr:      route.RemoteAddr,
 				RemoteAddrs:     route.RemoteAddrs,

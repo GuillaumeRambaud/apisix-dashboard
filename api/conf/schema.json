@@ -3139,6 +3139,58 @@
 		}
 	},
 	"plugins": {
+		"3ds-cas-auth": {
+			"priority": 2597,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+					"idp_url": {
+						"type": "string"
+					},
+					"logout_path": {
+						"type": "string"
+					},
+					"idp_url_regex": {
+						"type": "string",
+						"default": ""
+					},
+					"idp_url_header": {
+						"type": "string",
+						"default": "x-ds-iam-url"
+					},
+					"idp_login_url_key": {
+						"type": "string",
+						"default": "x3ds_auth_url"
+					},
+					"user_header": {
+						"type": "string",
+						"default": "X-Proxy-User"
+					},
+					"cookie_path": {
+						"type": "string",
+						"default": "/"
+					},
+					"encryption_key": {
+						"type": "string",
+						"minLength": 8,
+						"maxLength": 32
+					},
+					"encryption_salt": {
+						"type": "string",
+						"minLength": 8,
+						"maxLength": 8
+					}
+				},
+				"required": [
+					"idp_url",
+					"logout_path",
+					"encryption_key",
+					"encryption_salt"
+				],
+				"type": "object"
+			},
+			"version": 0.1
+		},
 		"ai": {
 			"priority": 22900,
 			"schema": {
@@ -7932,6 +7984,36 @@
 					"api_host",
 					"namespace",
 					"service_token"
+				],
+				"type": "object"
+			},
+			"version": 0.1
+		},
+		"onbehalf-jwt": {
+			"priority": 1000,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+					"issuer": {
+						"type": "string"
+					},
+					"subject": {
+						"type": "string"
+					},
+					"legal_entity_id": {
+						"type": "string",
+						"default": ""
+					},
+					"secret": {
+						"type": "string",
+						"default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
+					}
+				},
+				"required": [
+					"issuer",
+					"subject",
+					"legal_entity_id",
+					"secret"
 				],
 				"type": "object"
 			},

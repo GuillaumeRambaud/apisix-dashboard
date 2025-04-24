@@ -176,6 +176,7 @@ export default {
   'page.route.configuration.path.placeholder': 'HTTP istek yolu girin',
   'page.route.configuration.remote_addrs.placeholder': 'İstemci adresi girin',
   'page.route.configuration.host.placeholder': 'HTTP request hostname girin',
+  'page.route.configuration.host.rules.required.placeholder': 'HTTP request hostname girin',
 
   'page.route.service.none': 'Hiçbiri',
 

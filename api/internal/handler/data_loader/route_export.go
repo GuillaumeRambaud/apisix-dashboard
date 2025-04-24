@@ -552,6 +552,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 	})
 
 	if err != nil {
+		conf.Consumers = consumers
 		return err
 	}
 
@@ -579,12 +580,71 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		if err != nil {
 			return err
 		}
-		if ro.UpstreamID == nil {
-			variables, err = h.VariablizationOfNodeRoute(ro)
+
+		//Variablization of route host
+		if ro.Host != "" {
+			key := ro.Name + ".Host"
+			variables = append(variables, &entity.Variable{
+				Key:   key,
+				Value: ro.Host,
+			})
+
+			ro.Host = "${" + key + "}"
+		}
+
+		if ro.Hosts != nil {
+			for index, host := range ro.Hosts {
+				key := ro.Name + ".Hosts" + strconv.Itoa(index)
+				variables = append(variables, &entity.Variable{
+					Key:   key,
+					Value: host,
+				})
+
+				ro.Hosts[index] = "${" + key + "}"
+			}
+		}
+
+		//Variablization of route upstream
+		if ro.Upstream != nil {
+			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
+		}
+
+		//Variablization of plugins
+		if ro.Plugins != nil {
+			for plugin := range ro.Plugins {
+				log.Infof("Check Loop!")
+				//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
+					if ro.Plugins[plugin] != nil {
+						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								if key == "secret" {
+									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
+								}
+
+								if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
+									newSecret := "Route." + ro.Name + ".Plugin.3dsCasAuth." + key
+									pluginMap[key] = "${" + newSecret + "}"
+
+									variables = append(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", value),
+									})
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
 		routes = append(routes, ro)
-
 	}
 
 	conf.Routes = routes
@@ -609,7 +669,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 		if err != nil {
 			return err
 		}
-		variables, err = h.VariablizationOfNodeUpstream(up)
+		variables = append(variables, h.VariablizationOfNodeUpstream(up)...)
 		upstreams = append(upstreams, up)
 	}
 
@@ -635,7 +695,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 			return err
 		}
 		if se.UpstreamID == nil {
-			variables, err = h.VariablizationOfNodeService(se)
+			variables = append(variables, h.VariablizationOfNodeService(se)...)
 		}
 
 		services = append(services, service.(*entity.Service))
@@ -647,12 +707,12 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	return err
 }
 
-func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) []*entity.Variable {
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 	variables := []*entity.Variable{}
 
 	for index, node := range nodes {
-		key := "Upstream." + up.Name + ".Host." + strconv.Itoa(index)
+		key := "Upstream." + up.Name + "_" + up.ID.(string) + ".Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
@@ -662,10 +722,10 @@ func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) ([]*entity.V
 	}
 	up.Nodes = nodes
 
-	return variables, err
+	return variables
 }
 
-func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeService(se *entity.Service) []*entity.Variable {
 	variables := []*entity.Variable{}
 	up := &entity.UpstreamDef{}
 	up = se.Upstream
@@ -673,7 +733,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Var
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := "Service." + se.Name + ".Upstream.Host." + strconv.Itoa(index)
+		key := "Service." + se.Name + "_" + se.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
@@ -683,10 +743,10 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) ([]*entity.Var
 	}
 
 	up.Nodes = nodes
-	return variables, err
+	return variables
 }
 
-func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variable, error) {
+func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable {
 	variables := []*entity.Variable{}
 	up := &entity.UpstreamDef{}
 	up = ro.Upstream
@@ -694,7 +754,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variabl
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := "Route." + ro.Name + ".Upstream.Host." + strconv.Itoa(index)
+		key := "Route." + ro.Name + "_" + ro.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
 		variables = append(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
@@ -704,7 +764,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) ([]*entity.Variabl
 	}
 
 	up.Nodes = nodes
-	return variables, err
+	return variables
 }
 
 func deepCopyUpstream(src *entity.Upstream) (*entity.Upstream, error) {
