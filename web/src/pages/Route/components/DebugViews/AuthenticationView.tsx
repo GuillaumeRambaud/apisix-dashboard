@@ -78,6 +78,7 @@ const AuthenticationView: React.FC<RouteModule.DebugViewProps> = (props) => {
           </Form.Item>
         );
       case 'key-auth':
+      case 'onbehalf-jwt':
         return (
           <Form.Item
             label={formatMessage({ id: 'page.route.form.itemLabel.apikey' })}
