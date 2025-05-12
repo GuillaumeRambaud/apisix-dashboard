@@ -7994,14 +7994,17 @@
 			"consumer_schema": {
 				"properties": {
 				"key": {
-					"type": "string",
-					"legal_entity_id": "string"
+					"type": "string"
 					}
+				},
+				"legal_entity_id": {
+					"type": "string"
 				},
 				"required": [
 				"key"
 				],
-				"type": "auth"
+				"title": "work with consumer object",
+    			"type": "object"
 			},
 			"schema": {
 				"$comment": "this is a mark for our injected plugin schema",
