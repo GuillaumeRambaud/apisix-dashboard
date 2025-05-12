@@ -8000,6 +8000,9 @@
 							"type": "string"
 						}
 				},
+				"legal_entity_id": {
+					"type": "string"
+				},
 				"required": [
 				"key", "legal_entity_id"
 				],
