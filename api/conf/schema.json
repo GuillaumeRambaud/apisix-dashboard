@@ -8027,7 +8027,6 @@
 				"required": [
 					"issuer",
 					"subject",
-					"legal_entity_id",
 					"secret"
 				],
 				"type": "object"
