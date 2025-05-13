@@ -7993,12 +7993,12 @@
 			"priority": 2500,
 			"consumer_schema": {
 				"properties": {
-				"key": {
-					"type": "string"
-					}
-				},
-				"legal_entity_id": {
-					"type": "string"
+					"key": {
+						"type": "string"
+						},
+						"legal_entity_id": {
+							"type": "string"
+						}
 				},
 				"required": [
 				"key"
