@@ -8001,7 +8001,7 @@
 						}
 				},
 				"required": [
-				"key"
+				"key", "legal_entity_id"
 				],
 				"title": "work with consumer object",
     			"type": "object"
