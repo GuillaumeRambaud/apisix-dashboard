@@ -7990,7 +7990,22 @@
 			"version": 0.1
 		},
 		"onbehalf-jwt": {
-			"priority": 1000,
+			"priority": 2500,
+			"consumer_schema": {
+				"properties": {
+					"key": {
+						"type": "string"
+						},
+						"legal_entity_id": {
+							"type": "string"
+						}
+				},
+				"required": [
+				"key", "legal_entity_id"
+				],
+				"title": "work with consumer object",
+    			"type": "object"
+			},
 			"schema": {
 				"$comment": "this is a mark for our injected plugin schema",
 				"properties": {
@@ -8000,19 +8015,18 @@
 					"subject": {
 						"type": "string"
 					},
-					"legal_entity_id": {
-						"type": "string",
-						"default": ""
-					},
 					"secret": {
 						"type": "string",
 						"default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
+					},
+					"header": {
+						"default": "apikey",
+						"type": "string"
 					}
 				},
 				"required": [
 					"issuer",
 					"subject",
-					"legal_entity_id",
 					"secret"
 				],
 				"type": "object"
