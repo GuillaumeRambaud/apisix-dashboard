@@ -515,7 +515,6 @@ func GetPathNumber() func() int {
 // ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
 	configuration := &loader.DataSetsExport{}
-	fmt.Fprintf(os.Stdout, "Check ExportConfiguration ")
 
 	err := h.ConsumerList(c, configuration)
 	if err != nil {
@@ -568,7 +567,6 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
-	fmt.Fprintf(os.Stdout, "Check RouteList ")
 	routes := []*entity.Route{}
 	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
@@ -581,29 +579,6 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		ro, err := deepCopyRoute(route.(*entity.Route))
 		if err != nil {
 			return err
-		}
-
-		//Variablization of route host
-		if ro.Host != "" {
-			key := ro.Name + ".Host"
-			variables = append(variables, &entity.Variable{
-				Key:   key,
-				Value: ro.Host,
-			})
-
-			ro.Host = "${" + key + "}"
-		}
-
-		if ro.Hosts != nil {
-			for index, host := range ro.Hosts {
-				key := ro.Name + ".Hosts" + strconv.Itoa(index)
-				variables = append(variables, &entity.Variable{
-					Key:   key,
-					Value: host,
-				})
-
-				ro.Hosts[index] = "${" + key + "}"
-			}
 		}
 
 		//Variablization of route host
@@ -667,86 +642,6 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 					}
 				}
 			}
-		}
-
-		//Variablization of plugins
-		if ro.Plugins != nil {
-			for plugin := range ro.Plugins {
-				log.Infof("Check Loop!")
-				//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
-					if ro.Plugins[plugin] != nil {
-						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
-							for key, value := range pluginMap {
-								if key == "secret" {
-									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
-									pluginMap[key] = "${" + newSecret + "}"
-
-									variables = append(variables, &entity.Variable{
-										Key:   newSecret,
-										Value: fmt.Sprintf("%v", value),
-									})
-								}
-
-								if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
-									newSecret := "Route." + ro.Name + ".Plugin.3dsCasAuth." + key
-									pluginMap[key] = "${" + newSecret + "}"
-
-									variables = append(variables, &entity.Variable{
-										Key:   newSecret,
-										Value: fmt.Sprintf("%v", value),
-									})
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if ro.Plugins != nil {
-
-			for plugin := range ro.Plugins {
-				log.Infof("Check Loop!")
-				if plugin == "onbehalf-jwt" {
-					if ro.Plugins[plugin] != nil {
-						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
-							for key, value := range pluginMap {
-								if key == "secret" {
-									newSecret := "REDACTED" // or whatever new value you want
-									pluginMap[key] = newSecret
-									log.Infof("Replaced secret with: %v", newSecret)
-								}
-								log.Infof("Key: %s, Value: %v\n", key, value)
-								fmt.Printf("Key: %s, Value: %v\n", key, value)
-
-								// If the value is a nested map, you can assert its type
-								if nestedMap, ok := value.(map[string]interface{}); ok {
-									log.Infof("  Nested Map:")
-									fmt.Println("  Nested Map:")
-									for nestedKey, nestedValue := range nestedMap {
-										log.Infof("    %s: %v\n", nestedKey, nestedValue)
-										fmt.Printf("    %s: %v\n", nestedKey, nestedValue)
-									}
-								}
-						}
-					}
-				}
-			}
-			pluginsStr, _ := json.Marshal(ro.Plugins)
-			fmt.Fprintf(os.Stdout, "Plugins "+string(pluginsStr))
-
-			plugins, err := json.Marshal(ro.Plugins)
-			if err != nil {
-				log.Errorf("json marshal failed: %s", err)
-			}
-			// Convert the plugins to a map[string]interface{} type
-			var pluginMap map[string]interface{}
-			err = json.Unmarshal(plugins, &pluginMap)
-			if err != nil {
-				log.Errorf("json marshal failed: %s", err)
-			}
-
 		}
 
 		routes = append(routes, ro)

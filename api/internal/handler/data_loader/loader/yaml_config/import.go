@@ -150,8 +150,32 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	for _, route := range importData.Routes {
 		rte := entity.Route{}
-		if route.UpstreamID == nil {
 
+		if route.Plugins != nil {
+			for plugin := range route.Plugins {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
+					if route.Plugins[plugin] != nil {
+						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
+								if variable != nil {
+									pluginMap[key] = variable.Value
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if route.Host != "" {
+			variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
+			if variable != nil {
+				route.Host = variable.Value
+			}
+		}
+
+		if route.UpstreamID == nil {
 			// Replace the variable with the actual value
 			nodes := []*entity.Node{}
 			for _, node := range route.Upstream.Nodes {
@@ -184,39 +208,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				RetryTimeout:  route.Upstream.RetryTimeout,
 			}
 
-			if route.Plugins != nil {
-				for plugin := range route.Plugins {
-					if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
-						if route.Plugins[plugin] != nil {
-							if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
-								for key, value := range pluginMap {
-									variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
-									if variable != nil {
-										pluginMap[key] = variable.Value
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			host := route.Host
-			if route.Host != "" {
-				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
-				if variable != nil {
-					host = variable.Value
-				}
-			}
-
-			host := route.Host
-			if route.Host != "" {
-				variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
-				if variable != nil {
-					host = variable.Value
-				}
-			}
-
 			rte = entity.Route{
 				BaseInfo:        entity.BaseInfo{ID: route.ID, CreateTime: route.CreateTime, UpdateTime: route.UpdateTime},
 				URI:             route.URI,
@@ -225,7 +216,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 				Desc:            route.Desc,
 				Priority:        route.Priority,
 				Methods:         route.Methods,
-				Host:            host,
+				Host:            route.Host,
 				Hosts:           route.Hosts,
 				RemoteAddr:      route.RemoteAddr,
 				RemoteAddrs:     route.RemoteAddrs,
@@ -273,7 +264,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		transformModel.Routes = append(transformModel.Routes, rte)
 	}
-
 	transformModel.Consumers = append(transformModel.Consumers, importData.Consumers...)
 
 	return &transformModel, err
