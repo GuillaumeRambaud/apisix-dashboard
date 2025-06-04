@@ -3170,6 +3170,10 @@
 						"type": "string",
 						"default": "/"
 					},
+					"cookie_secure": {
+						"type": "string",
+						"default": "true"
+					},
 					"encryption_key": {
 						"type": "string",
 						"minLength": 8,
