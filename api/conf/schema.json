@@ -3171,8 +3171,8 @@
 						"default": "/"
 					},
 					"cookie_secure": {
-						"type": "string",
-						"default": "true"
+						"type": "boolean",
+						"default": true
 					},
 					"encryption_key": {
 						"type": "string",
