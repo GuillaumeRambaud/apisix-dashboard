@@ -334,6 +334,9 @@ export const PLUGIN_LIST = {
   '3ds-cas-auth': {
     type: PluginType.authentication,
   },
+  '3ds-cas-sso': {
+    type: PluginType.authentication,
+  },
   'onbehalf-jwt': {
     type: PluginType.authentication,
   },
