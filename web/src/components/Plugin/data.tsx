@@ -337,4 +337,10 @@ export const PLUGIN_LIST = {
   'onbehalf-jwt': {
     type: PluginType.authentication,
   },
+  'cas-pgt': {
+    type: PluginType.authentication,
+  },
+  'cas-pgt-callback': {
+    type: PluginType.authentication,
+  },
 };

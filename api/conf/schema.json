@@ -4051,6 +4051,36 @@
 			},
 			"version": 0.1
 		},
+		"cas-pgt": {
+			"priority": 2597,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+				"idp_url": {
+					"type": "string"
+				},
+				"pgt_callback_url": {
+					"type": "string"
+				}
+				},
+				"required": [
+				"idp_url",
+				"pgt_callback_url"
+				],
+				"type": "object"
+			},
+			"version": 0.1
+		},
+		"cas-pgt-callback": {
+			"priority": 2597,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+				},
+				"type": "object"
+			},
+			"version": 0.1
+		},
 		"clickhouse-logger": {
 			"metadata_schema": {
 				"properties": {
