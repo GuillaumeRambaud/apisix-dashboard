@@ -3239,13 +3239,18 @@
 						"type": "string",
 						"minLength": 8,
 						"maxLength": 8
+					},
+					"cookie_name": {
+						"type": "string",
+						"default": "DISP_SESSION_123456"
 					}
 				},
 				"required": [
 					"idp_url",
 					"logout_path",
 					"encryption_key",
-					"encryption_salt"
+					"encryption_salt",
+					"cookie_name"
 				],
 				"type": "object"
 			},
