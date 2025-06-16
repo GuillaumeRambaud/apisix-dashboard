@@ -3226,10 +3226,6 @@
 						"type": "string",
 						"default": "/"
 					},
-					"cookie_secure": {
-						"type": "boolean",
-						"default": true
-					},
 					"encryption_key": {
 						"type": "string",
 						"minLength": 8,
