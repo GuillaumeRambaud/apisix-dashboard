@@ -557,6 +557,16 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 	}
 
 	for _, consumer := range consumerList.Rows {
+		con, err := deepCopyConsumer(consumer.(*entity.Consumer))
+
+		if err != nil {
+			return err
+		}
+
+		if con.Plugins != nil {
+			h.VariablizationOfPlugins(con.Plugins, con.Username, conf.Variables)
+		}
+
 		consumers = append(consumers, consumer.(*entity.Consumer))
 	}
 
@@ -568,7 +578,6 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
 	routes := []*entity.Route{}
-	variables := []*entity.Variable{}
 	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
@@ -584,7 +593,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		//Variablization of route host
 		if ro.Host != "" {
 			key := "Route.Host"
-			variables = append(variables, &entity.Variable{
+			AddVariable(conf.Variables, &entity.Variable{
 				Key:   key,
 				Value: ro.Host,
 			})
@@ -595,7 +604,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
 				key := ro.Name + ".Hosts" + strconv.Itoa(index)
-				variables = append(variables, &entity.Variable{
+				AddVariable(conf.Variables, &entity.Variable{
 					Key:   key,
 					Value: host,
 				})
@@ -606,52 +615,17 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
+			h.VariablizationOfNodeRoute(ro, conf.Variables)
 		}
 
 		if ro.Plugins != nil {
-			variables = append(variables, h.VariablizationOfPlugins(ro.Plugins, ro.Name)...)
+			h.VariablizationOfPlugins(ro.Plugins, ro.Name, conf.Variables)
 		}
-
-		// //Variablization of plugins
-		// if ro.Plugins != nil {
-		// 	for plugin := range ro.Plugins {
-		// 		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-		// 		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
-		// 			if ro.Plugins[plugin] != nil {
-		// 				if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
-		// 					for key, value := range pluginMap {
-		// 						if key == "secret" {
-		// 							newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
-		// 							pluginMap[key] = "${" + newSecret + "}"
-
-		// 							variables = append(variables, &entity.Variable{
-		// 								Key:   newSecret,
-		// 								Value: fmt.Sprintf("%v", value),
-		// 							})
-		// 						}
-
-		// 						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
-		// 							newSecret := "Route." + ro.Name + ".Plugin." + plugin + "." + key
-		// 							pluginMap[key] = "${" + newSecret + "}"
-
-		// 							variables = append(variables, &entity.Variable{
-		// 								Key:   newSecret,
-		// 								Value: fmt.Sprintf("%v", value),
-		// 							})
-		// 						}
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
 
 		routes = append(routes, ro)
 	}
 
 	conf.Routes = routes
-	conf.Variables = append(conf.Variables, variables...)
 
 	return err
 }
@@ -659,7 +633,6 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 // UpstreamList Return all the upstreams configurations
 func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) error {
 	upstreams := []*entity.Upstream{}
-	variables := []*entity.Variable{}
 
 	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
 
@@ -672,12 +645,11 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 		if err != nil {
 			return err
 		}
-		variables = append(variables, h.VariablizationOfNodeUpstream(up)...)
+		h.VariablizationOfNodeUpstream(up, conf.Variables)
 		upstreams = append(upstreams, up)
 	}
 
 	conf.Upstreams = upstreams
-	conf.Variables = append(conf.Variables, variables...)
 
 	return err
 }
@@ -685,7 +657,6 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 // ServiceList Return all the services configurations
 func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) error {
 	services := []*entity.Service{}
-	variables := []*entity.Variable{}
 	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
@@ -698,25 +669,23 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 			return err
 		}
 		if se.UpstreamID == nil {
-			variables = append(variables, h.VariablizationOfNodeService(se)...)
+			h.VariablizationOfNodeService(se, conf.Variables)
 		}
 
 		services = append(services, service.(*entity.Service))
 	}
 
 	conf.Services = services
-	conf.Variables = append(conf.Variables, variables...)
 
 	return err
 }
 
-func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) []*entity.Variable {
+func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream, variables []*entity.Variable) {
 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
-	variables := []*entity.Variable{}
 
 	for index, node := range nodes {
 		key := "Upstream." + up.Name + "_" + up.ID.(string) + ".Host." + strconv.Itoa(index)
-		variables = append(variables, &entity.Variable{
+		AddVariable(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -724,12 +693,9 @@ func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream) []*entity.Va
 		node.Host = "${" + key + "}"
 	}
 	up.Nodes = nodes
-
-	return variables
 }
 
-func (h *Handler) VariablizationOfNodeService(se *entity.Service) []*entity.Variable {
-	variables := []*entity.Variable{}
+func (h *Handler) VariablizationOfNodeService(se *entity.Service, variables []*entity.Variable) {
 	up := &entity.UpstreamDef{}
 	up = se.Upstream
 
@@ -737,7 +703,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) []*entity.Vari
 
 	for index, node := range nodes {
 		key := "Service." + se.Name + "_" + se.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-		variables = append(variables, &entity.Variable{
+		AddVariable(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -746,11 +712,10 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service) []*entity.Vari
 	}
 
 	up.Nodes = nodes
-	return variables
+
 }
 
-func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable {
-	variables := []*entity.Variable{}
+func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables []*entity.Variable) {
 	up := &entity.UpstreamDef{}
 	up = ro.Upstream
 
@@ -758,7 +723,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable
 
 	for index, node := range nodes {
 		key := "Route." + ro.Name + "_" + ro.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-		variables = append(variables, &entity.Variable{
+		AddVariable(variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -767,47 +732,57 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable
 	}
 
 	up.Nodes = nodes
-	return variables
 }
 
-func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeName string) []*entity.Variable {
-	variables := []*entity.Variable{}
+func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeName string, variables []*entity.Variable) {
 
-	//Variablization of plugins
-	if plugins != nil {
-		for plugin := range plugins {
-			//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-			if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
-				if plugins[plugin] != nil {
-					if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
-						for key, value := range pluginMap {
-							if key == "secret" {
-								newSecret := "Route." + routeName + ".Plugin.OnBehalf"
-								pluginMap[key] = "${" + newSecret + "}"
+	//Variabilization of plugins
+	for plugin := range plugins {
+		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
+			if plugins[plugin] != nil {
+				if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
+					for key, value := range pluginMap {
+						if key == "secret" {
+							newSecret := "Route." + routeName + ".Plugin.OnBehalf"
+							pluginMap[key] = "${" + newSecret + "}"
 
-								variables = append(variables, &entity.Variable{
-									Key:   newSecret,
-									Value: fmt.Sprintf("%v", value),
-								})
-							}
+							AddVariable(variables, &entity.Variable{
+								Key:   newSecret,
+								Value: fmt.Sprintf("%v", value),
+							})
+						}
 
-							if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
-								newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
-								pluginMap[key] = "${" + newSecret + "}"
+						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" || key == "key" {
+							newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+							pluginMap[key] = "${" + newSecret + "}"
 
-								variables = append(variables, &entity.Variable{
-									Key:   newSecret,
-									Value: fmt.Sprintf("%v", value),
-								})
-							}
+							AddVariable(variables, &entity.Variable{
+								Key:   newSecret,
+								Value: fmt.Sprintf("%v", value),
+							})
 						}
 					}
 				}
 			}
 		}
 	}
+}
 
-	return variables
+func deepCopyConsumer(src *entity.Consumer) (*entity.Consumer, error) {
+	// Serialize the source slice to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal upstreams: %w", err)
+	}
+
+	// Deserialize the JSON into a new slice
+	var dst *entity.Consumer
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal upstreams: %w", err)
+	}
+
+	return dst, nil
 }
 
 func deepCopyUpstream(src *entity.Upstream) (*entity.Upstream, error) {
@@ -856,4 +831,17 @@ func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
 	}
 
 	return dst, nil
+}
+
+// AddVariable adds a Variable to the slice if the Key doesn't already exist.
+func AddVariable(variables []*entity.Variable, newVar *entity.Variable) {
+
+	for _, v := range variables {
+		if v.Key == newVar.Key {
+			// Update value if the key exists (optional)
+			v.Value = newVar.Value
+			return
+		}
+	}
+	variables = append(variables, newVar)
 }
