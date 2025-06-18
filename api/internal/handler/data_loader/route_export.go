@@ -583,7 +583,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route host
 		if ro.Host != "" {
-			key := ro.Name + ".Host"
+			key := "Route.Host"
 			variables = append(variables, &entity.Variable{
 				Key:   key,
 				Value: ro.Host,
@@ -609,40 +609,43 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			variables = append(variables, h.VariablizationOfNodeRoute(ro)...)
 		}
 
-		//Variablization of plugins
 		if ro.Plugins != nil {
-			for plugin := range ro.Plugins {
-				log.Infof("Check Loop!")
-				//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
-					if ro.Plugins[plugin] != nil {
-						if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
-							for key, value := range pluginMap {
-								if key == "secret" {
-									newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
-									pluginMap[key] = "${" + newSecret + "}"
-
-									variables = append(variables, &entity.Variable{
-										Key:   newSecret,
-										Value: fmt.Sprintf("%v", value),
-									})
-								}
-
-								if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
-									newSecret := "Route." + ro.Name + ".Plugin.3dsCasAuth." + key
-									pluginMap[key] = "${" + newSecret + "}"
-
-									variables = append(variables, &entity.Variable{
-										Key:   newSecret,
-										Value: fmt.Sprintf("%v", value),
-									})
-								}
-							}
-						}
-					}
-				}
-			}
+			variables = append(variables, h.VariablizationOfPlugins(ro.Plugins, ro.Name)...)
 		}
+
+		// //Variablization of plugins
+		// if ro.Plugins != nil {
+		// 	for plugin := range ro.Plugins {
+		// 		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+		// 		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
+		// 			if ro.Plugins[plugin] != nil {
+		// 				if pluginMap, ok := ro.Plugins[plugin].(map[string]interface{}); ok {
+		// 					for key, value := range pluginMap {
+		// 						if key == "secret" {
+		// 							newSecret := "Route." + ro.Name + ".Plugin.OnBehalf"
+		// 							pluginMap[key] = "${" + newSecret + "}"
+
+		// 							variables = append(variables, &entity.Variable{
+		// 								Key:   newSecret,
+		// 								Value: fmt.Sprintf("%v", value),
+		// 							})
+		// 						}
+
+		// 						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
+		// 							newSecret := "Route." + ro.Name + ".Plugin." + plugin + "." + key
+		// 							pluginMap[key] = "${" + newSecret + "}"
+
+		// 							variables = append(variables, &entity.Variable{
+		// 								Key:   newSecret,
+		// 								Value: fmt.Sprintf("%v", value),
+		// 							})
+		// 						}
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		routes = append(routes, ro)
 	}
@@ -761,6 +764,47 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route) []*entity.Variable
 		})
 
 		node.Host = "${" + key + "}"
+	}
+
+	up.Nodes = nodes
+	return variables
+}
+
+func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeName string) []*entity.Variable {
+	variables := []*entity.Variable{}
+
+	//Variablization of plugins
+	if plugins != nil {
+		for plugin := range plugins {
+			//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+			if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
+				if plugins[plugin] != nil {
+					if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
+						for key, value := range pluginMap {
+							if key == "secret" {
+								newSecret := "Route." + routeName + ".Plugin.OnBehalf"
+								pluginMap[key] = "${" + newSecret + "}"
+
+								variables = append(variables, &entity.Variable{
+									Key:   newSecret,
+									Value: fmt.Sprintf("%v", value),
+								})
+							}
+
+							if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" {
+								newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+								pluginMap[key] = "${" + newSecret + "}"
+
+								variables = append(variables, &entity.Variable{
+									Key:   newSecret,
+									Value: fmt.Sprintf("%v", value),
+								})
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	up.Nodes = nodes

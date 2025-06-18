@@ -86,8 +86,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	for _, service := range importData.Services {
 		svc := entity.Service{}
-		if service.UpstreamID == nil {
-
+		if !reflect.DeepEqual(service.Upstream, entity.UpstreamImport{}) {
 			nodes := []*entity.Node{}
 			for _, node := range service.Upstream.Nodes {
 				variable := getVariable(importData.Variables, node.Host)
@@ -153,7 +152,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if route.Plugins != nil {
 			for plugin := range route.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
 					if route.Plugins[plugin] != nil {
 						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
