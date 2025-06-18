@@ -175,7 +175,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			}
 		}
 
-		if route.UpstreamID == nil {
+		if !reflect.DeepEqual(route.Upstream, entity.UpstreamImport{}) {
 			// Replace the variable with the actual value
 			nodes := []*entity.Node{}
 			for _, node := range route.Upstream.Nodes {
