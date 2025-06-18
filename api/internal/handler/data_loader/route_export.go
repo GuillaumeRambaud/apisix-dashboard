@@ -807,7 +807,6 @@ func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeN
 		}
 	}
 
-	up.Nodes = nodes
 	return variables
 }
 
