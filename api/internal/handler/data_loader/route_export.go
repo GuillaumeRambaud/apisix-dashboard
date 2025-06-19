@@ -617,7 +617,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		if ro.Upstream != nil {
 			// nodes := entity.NodesFormat(ro.Upstream.Nodes).([]*entity.Node)
 			// h.VariabilizationOfNode(&nodes, &conf.Variables, ro.Name+".Upstream.")
-			h.VariabilizationOfNode2(&ro.Upstream.Nodes, &conf.Variables, ro.Name+".Upstream.")
+			h.VariabilizationOfNode2(ro.Upstream.Nodes, &conf.Variables, ro.Name+".Upstream.")
 		}
 
 		if ro.Plugins != nil {
