@@ -678,18 +678,20 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 
 	for index, node := range nodes {
 		key := nodeName + ".Host." + strconv.Itoa(index)
-		AddVariable(variables, &entity.Variable{
-			Key:   key,
-			Value: node.Host,
-		})
 
-		node.Host = "${" + key + "}"
+		h.HostToVar(&node.Host, variables, key)
+		// AddVariable(variables, &entity.Variable{
+		// 	Key:   key,
+		// 	Value: node.Host,
+		// })
+
+		// node.Host = "${" + key + "}"
 	}
 }
 
 func (h *Handler) HostToVar(host *string, variables *[]*entity.Variable, nodeName string) {
 	if *host != "" {
-		key := "Route.Host"
+		key := nodeName
 		AddVariable(variables, &entity.Variable{
 			Key:   key,
 			Value: *host,
