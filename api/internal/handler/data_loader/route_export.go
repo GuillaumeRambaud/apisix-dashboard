@@ -615,7 +615,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			h.VariablizationOfNodeRoute(ro, &conf.Variables)
+			h.VariabilizationOfNode(&ro.Upstream.Nodes, &conf.Variables, ro.Name+".Upstream.")
 		}
 
 		if ro.Plugins != nil {
@@ -735,6 +735,20 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables *[]*enti
 	up.Nodes = nodes
 }
 
+func (h *Handler) VariabilizationOfNode(nodesInterface *interface{}, variables *[]*entity.Variable, nodeName string) {
+	nodes := entity.NodesFormat(nodesInterface).([]*entity.Node)
+
+	for index, node := range nodes {
+		key := "Route." + nodeName + ".Host." + strconv.Itoa(index)
+		AddVariable(variables, &entity.Variable{
+			Key:   key,
+			Value: node.Host,
+		})
+
+		node.Host = "${" + key + "}"
+	}
+}
+
 func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
 
 	//Variabilization of plugins
@@ -770,76 +784,8 @@ func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeN
 	}
 }
 
-func deepCopyConsumer(src *entity.Consumer) (*entity.Consumer, error) {
-	// Serialize the source slice to JSON
-	data, err := json.Marshal(src)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal upstreams: %w", err)
-	}
-
-	// Deserialize the JSON into a new slice
-	var dst *entity.Consumer
-	if err := json.Unmarshal(data, &dst); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal upstreams: %w", err)
-	}
-
-	return dst, nil
-}
-
-func deepCopyUpstream(src *entity.Upstream) (*entity.Upstream, error) {
-	// Serialize the source slice to JSON
-	data, err := json.Marshal(src)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal upstreams: %w", err)
-	}
-
-	// Deserialize the JSON into a new slice
-	var dst *entity.Upstream
-	if err := json.Unmarshal(data, &dst); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal upstreams: %w", err)
-	}
-
-	return dst, nil
-}
-
-func deepCopyService(src *entity.Service) (*entity.Service, error) {
-	// Serialize the source slice to JSON
-	data, err := json.Marshal(src)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal services: %w", err)
-	}
-
-	// Deserialize the JSON into a new slice
-	var dst *entity.Service
-	if err := json.Unmarshal(data, &dst); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal services: %w", err)
-	}
-
-	return dst, nil
-}
-
-func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
-	// Serialize the source slice to JSON
-	data, err := json.Marshal(src)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal routes: %w", err)
-	}
-
-	// Deserialize the JSON into a new slice
-	var dst *entity.Route
-	if err := json.Unmarshal(data, &dst); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal routes: %w", err)
-	}
-
-	return dst, nil
-}
-
 // AddVariable adds a Variable to the slice if the Key doesn't already exist.
 func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
-
-	log.Infof("Start Variables: " + utils.InterfaceToString(len(*variables)))
-	log.Infof("New Variable: %s", newVar.Key)
-
 	for _, v := range *variables {
 		if v.Key == newVar.Key {
 			// Update value if the key exists (optional)
@@ -848,5 +794,4 @@ func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
 		}
 	}
 	*variables = append(*variables, newVar)
-	log.Infof("End Variables: " + utils.InterfaceToString(len(*variables)))
 }
