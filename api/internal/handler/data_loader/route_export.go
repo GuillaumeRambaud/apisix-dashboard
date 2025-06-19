@@ -640,7 +640,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 
 	for _, upstream := range upstreamList.Rows {
 		up := upstream.(*entity.Upstream)
-		h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
+		h.NodeToVar(&up.Nodes, &conf.Variables, "Upstream."+up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, up)
 	}
@@ -663,7 +663,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 		se := service.(*entity.Service)
 
 		if se.Upstream != nil {
-			h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
+			h.NodeToVar(&se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
 		}
 
 		services = append(services, se)
