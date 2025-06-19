@@ -737,7 +737,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables *[]*enti
 	up.Nodes = nodes
 }
 
-func (h *Handler) VariabilizationOfNode2(obj *interface{}, variables *[]*entity.Variable, nodeName string) {
+func (h *Handler) VariabilizationOfNode2(obj interface{}, variables *[]*entity.Variable, nodeName string) {
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
