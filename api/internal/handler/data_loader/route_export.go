@@ -598,7 +598,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		// 	ro.Host = "${" + key + "}"
 		// }
 
-		h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
+		h.HostToVar(&ro.Host, &conf.Variables, "Route.Host")
 
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
@@ -687,15 +687,15 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 	}
 }
 
-func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) {
-	if host != "" {
+func (h *Handler) HostToVar(host *string, variables *[]*entity.Variable, nodeName string) {
+	if *host != "" {
 		key := "Route.Host"
 		AddVariable(variables, &entity.Variable{
 			Key:   key,
-			Value: host,
+			Value: *host,
 		})
 
-		host = "${" + key + "}"
+		*host = "${" + key + "}"
 	}
 }
 
