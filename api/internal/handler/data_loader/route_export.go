@@ -564,7 +564,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 		}
 
 		if con.Plugins != nil {
-			h.VariablizationOfPlugins(con.Plugins, con.Username, &conf.Variables)
+			h.PluginsToVar(con.Plugins, con.Username, &conf.Variables)
 		}
 
 		consumers = append(consumers, consumer.(*entity.Consumer))
@@ -586,20 +586,19 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 	for _, route := range routeList.Rows {
 		ro := route.(*entity.Route)
-		if err != nil {
-			return err
-		}
 
 		//Variablization of route host
-		if ro.Host != "" {
-			key := "Route.Host"
-			AddVariable(&conf.Variables, &entity.Variable{
-				Key:   key,
-				Value: ro.Host,
-			})
+		// if ro.Host != "" {
+		// 	key := "Route.Host"
+		// 	AddVariable(&conf.Variables, &entity.Variable{
+		// 		Key:   key,
+		// 		Value: ro.Host,
+		// 	})
 
-			ro.Host = "${" + key + "}"
-		}
+		// 	ro.Host = "${" + key + "}"
+		// }
+
+		h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
 
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
@@ -615,14 +614,12 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			h.VariabilizationOfNode(ro.Upstream.Nodes, &conf.Variables, "Route."+ro.Name)
+			h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route."+ro.Name)
 		}
 
 		if ro.Plugins != nil {
-			h.VariablizationOfPlugins(ro.Plugins, ro.Name, &conf.Variables)
+			h.PluginsToVar(ro.Plugins, ro.Name, &conf.Variables)
 		}
-
-		log.Infof("Routes Variables: %d", len(conf.Variables))
 
 		routes = append(routes, ro)
 	}
@@ -643,8 +640,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 
 	for _, upstream := range upstreamList.Rows {
 		up := upstream.(*entity.Upstream)
-		h.VariabilizationOfNode(up.Nodes, &conf.Variables, "Upstream."+up.Name)
-		// h.VariablizationOfNodeUpstream(upstream.(*entity.Upstream), &conf.Variables)
+		h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
 		upstreams = append(upstreams, up)
 	}
 
@@ -665,8 +661,8 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	for _, service := range serviceList.Rows {
 		se := service.(*entity.Service)
 
-		if se.UpstreamID == nil {
-			h.VariabilizationOfNode(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
+		if se.Upstream != nil {
+			h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
 		}
 
 		services = append(services, se)
@@ -677,61 +673,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	return err
 }
 
-// func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream, variables *[]*entity.Variable) {
-// 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
-
-// 	for index, node := range nodes {
-// 		key := "Upstream." + up.Name + "_" + up.ID.(string) + ".Host." + strconv.Itoa(index)
-// 		AddVariable(variables, &entity.Variable{
-// 			Key:   key,
-// 			Value: node.Host,
-// 		})
-
-// 		node.Host = "${" + key + "}"
-// 	}
-// 	up.Nodes = nodes
-// }
-
-// func (h *Handler) VariablizationOfNodeService(se *entity.Service, variables *[]*entity.Variable) {
-// 	up := &entity.UpstreamDef{}
-// 	up = se.Upstream
-
-// 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
-
-// 	for index, node := range nodes {
-// 		key := "Service." + se.Name + "_" + se.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-// 		AddVariable(variables, &entity.Variable{
-// 			Key:   key,
-// 			Value: node.Host,
-// 		})
-
-// 		node.Host = "${" + key + "}"
-// 	}
-
-// 	up.Nodes = nodes
-
-// }
-
-// func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables *[]*entity.Variable) {
-// 	up := &entity.UpstreamDef{}
-// 	up = ro.Upstream
-
-// 	nodes := entity.NodesFormat(up.Nodes).([]*entity.Node)
-
-// 	for index, node := range nodes {
-// 		key := "Route." + ro.Name + "_" + ro.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-// 		AddVariable(variables, &entity.Variable{
-// 			Key:   key,
-// 			Value: node.Host,
-// 		})
-
-// 		node.Host = "${" + key + "}"
-// 	}
-
-// 	up.Nodes = nodes
-// }
-
-func (h *Handler) VariabilizationOfNode(obj interface{}, variables *[]*entity.Variable, nodeName string) {
+func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, nodeName string) {
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
@@ -745,19 +687,19 @@ func (h *Handler) VariabilizationOfNode(obj interface{}, variables *[]*entity.Va
 	}
 }
 
-// func (h *Handler) VariabilizationOfNode(nodes *[]*entity.Node, variables *[]*entity.Variable, nodeName string) {
-// 	for index, node := range *nodes {
-// 		key := "Route." + nodeName + ".Host." + strconv.Itoa(index)
-// 		AddVariable(variables, &entity.Variable{
-// 			Key:   key,
-// 			Value: node.Host,
-// 		})
+func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) {
+	if host != "" {
+		key := "Route.Host"
+		AddVariable(variables, &entity.Variable{
+			Key:   key,
+			Value: host,
+		})
 
-// 		node.Host = "${" + key + "}"
-// 	}
-// }
+		host = "${" + key + "}"
+	}
+}
 
-func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
+func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
 
 	//Variabilization of plugins
 	for plugin := range plugins {
