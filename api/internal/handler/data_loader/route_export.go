@@ -836,6 +836,10 @@ func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
 // AddVariable adds a Variable to the slice if the Key doesn't already exist.
 func AddVariable(variables []*entity.Variable, newVar *entity.Variable) {
 
+	log.Infof("Variables !" + utils.InterfaceToString(len(variables)))
+	log.Infof("New Variable: %s", newVar.Key)
+	fmt.Println("Length of array: ", len(variables))
+
 	for _, v := range variables {
 		if v.Key == newVar.Key {
 			// Update value if the key exists (optional)
