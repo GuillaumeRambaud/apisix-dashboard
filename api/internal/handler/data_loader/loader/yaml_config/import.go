@@ -86,6 +86,24 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 	for _, service := range importData.Services {
 		svc := entity.Service{}
+
+		if service.Plugins != nil {
+			for plugin := range service.Plugins {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
+					if service.Plugins[plugin] != nil {
+						if pluginMap, ok := service.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
+								if variable != nil {
+									pluginMap[key] = variable.Value
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if !reflect.DeepEqual(service.Upstream, entity.UpstreamImport{}) {
 			nodes := []*entity.Node{}
 			for _, node := range service.Upstream.Nodes {
@@ -152,7 +170,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if route.Plugins != nil {
 			for plugin := range route.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
 					if route.Plugins[plugin] != nil {
 						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
@@ -263,7 +281,38 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		transformModel.Routes = append(transformModel.Routes, rte)
 	}
-	transformModel.Consumers = append(transformModel.Consumers, importData.Consumers...)
+
+	for _, consumer := range importData.Consumers {
+		csm := entity.Consumer{}
+
+		if consumer.Plugins != nil {
+			for plugin := range consumer.Plugins {
+				if plugin == "onbehalf-jwt" || plugin == "key-auth" {
+					if consumer.Plugins[plugin] != nil {
+						if pluginMap, ok := consumer.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
+								if variable != nil {
+									pluginMap[key] = variable.Value
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		csm = entity.Consumer{
+			Username:   consumer.Username,
+			Desc:       consumer.Desc,
+			Plugins:    consumer.Plugins,
+			Labels:     consumer.Labels,
+			CreateTime: consumer.CreateTime,
+			UpdateTime: consumer.UpdateTime,
+		}
+
+		transformModel.Consumers = append(transformModel.Consumers, csm)
+	}
 
 	return &transformModel, err
 }
