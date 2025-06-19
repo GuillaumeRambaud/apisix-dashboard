@@ -599,7 +599,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route."+ro.Name)
+			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route."+ro.Name)
 		}
 
 		if ro.Plugins != nil {
@@ -625,7 +625,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 
 	for _, upstream := range upstreamList.Rows {
 		up := *upstream.(*entity.Upstream)
-		h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
+		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, &up)
 	}
@@ -648,7 +648,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 		se := service.(*entity.Service)
 
 		if se.Upstream != nil {
-			h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
+			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
 		}
 
 		services = append(services, se)
@@ -659,7 +659,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	return err
 }
 
-func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, nodeName string) {
+func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, nodeName string) []*entity.Node {
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
@@ -667,19 +667,9 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 		log.Infof("NodeToVar key: %s", key)
 
 		node.Host = h.HostToVar(node.Host, variables, key)
-
-		// log.Infof("NodeToVar node.Host: %s", node.Host)
-		// AddVariable(variables, &entity.Variable{
-		// 	Key:   key,
-		// 	Value: node.Host,
-		// })
-
-		// node.Host = "${" + key + "}"
 	}
 
-	for index, node := range nodes {
-		log.Infof("%d NodeToVar node: %s", index, node.Host)
-	}
+	return nodes
 }
 
 func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) string {
