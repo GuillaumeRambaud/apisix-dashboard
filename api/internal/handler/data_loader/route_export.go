@@ -557,7 +557,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 	}
 
 	for _, consumer := range consumerList.Rows {
-		con, err := deepCopyConsumer(consumer.(*entity.Consumer))
+		con := consumer.(*entity.Consumer)
 
 		if err != nil {
 			return err
@@ -585,7 +585,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 	}
 
 	for _, route := range routeList.Rows {
-		ro, err := deepCopyRoute(route.(*entity.Route))
+		ro := route.(*entity.Route)
 		if err != nil {
 			return err
 		}
@@ -635,14 +635,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 // UpstreamList Return all the upstreams configurations
 func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) error {
 	upstreams := []*entity.Upstream{}
-
-	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{
-		Format: func(obj interface{}) interface{} {
-			upstream := obj.(*entity.Upstream)
-			upstream.Nodes = entity.NodesFormat(upstream.Nodes)
-			return upstream
-		},
-	})
+	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
 
 	if err != nil {
 		return err
@@ -672,7 +665,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	}
 
 	for _, service := range serviceList.Rows {
-		se, err := deepCopyService(service.(*entity.Service))
+		se := service.(*entity.Service)
 		if err != nil {
 			return err
 		}
