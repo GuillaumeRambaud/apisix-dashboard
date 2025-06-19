@@ -515,7 +515,6 @@ func GetPathNumber() func() int {
 // ExportAllRoutes All routes can be directly exported without passing parameters
 func (h *Handler) ExportConfiguration(c droplet.Context) (interface{}, error) {
 	configuration := &loader.DataSetsExport{}
-	configuration.Variables = []*entity.Variable{}
 
 	err := h.ConsumerList(c, configuration)
 	if err != nil {
@@ -637,19 +636,25 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) error {
 	upstreams := []*entity.Upstream{}
 
-	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
+	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{
+		Format: func(obj interface{}) interface{} {
+			upstream := obj.(*entity.Upstream)
+			upstream.Nodes = entity.NodesFormat(upstream.Nodes)
+			return upstream
+		},
+	})
 
 	if err != nil {
 		return err
 	}
 
 	for _, upstream := range upstreamList.Rows {
-		up, err := deepCopyUpstream(upstream.(*entity.Upstream))
+		// up, err := deepCopyUpstream(upstream.(*entity.Upstream))
 		if err != nil {
 			return err
 		}
-		h.VariablizationOfNodeUpstream(up, &conf.Variables)
-		upstreams = append(upstreams, up)
+		h.VariablizationOfNodeUpstream(upstream.(*entity.Upstream), &conf.Variables)
+		upstreams = append(upstreams, upstream.(*entity.Upstream))
 	}
 
 	conf.Upstreams = upstreams
