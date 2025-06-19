@@ -598,7 +598,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		// 	ro.Host = "${" + key + "}"
 		// }
 
-		h.HostToVar(&ro.Host, &conf.Variables, "Route.Host")
+		ro.Host = h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
 
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
@@ -680,7 +680,7 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 		key := nodeName + ".Host." + strconv.Itoa(index)
 		log.Infof("NodeToVar: %s", key)
 
-		h.HostToVar(&node.Host, variables, key)
+		node.Host = h.HostToVar(node.Host, variables, key)
 		// AddVariable(variables, &entity.Variable{
 		// 	Key:   key,
 		// 	Value: node.Host,
@@ -690,18 +690,20 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 	}
 }
 
-func (h *Handler) HostToVar(host *string, variables *[]*entity.Variable, nodeName string) {
+func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) string {
 	log.Infof("HostToVar: %s", host)
-	if *host != "" {
+	if host != "" {
 		key := nodeName
 		AddVariable(variables, &entity.Variable{
 			Key:   key,
-			Value: *host,
+			Value: host,
 		})
 
-		*host = "${" + key + "}"
+		host = "${" + key + "}"
+
 	}
 	log.Infof("HostToVar new : %s", host)
+	return host
 }
 
 func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
