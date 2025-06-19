@@ -615,9 +615,9 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			nodes := entity.NodesFormat(ro.Upstream.Nodes).([]*entity.Node)
-			h.VariabilizationOfNode(&nodes, &conf.Variables, ro.Name+".Upstream.")
-			// ro.Upstream.Nodes = nodes
+			// nodes := entity.NodesFormat(ro.Upstream.Nodes).([]*entity.Node)
+			// h.VariabilizationOfNode(&nodes, &conf.Variables, ro.Name+".Upstream.")
+			h.VariabilizationOfNode2(&ro.Upstream.Nodes, &conf.Variables, ro.Name+".Upstream.")
 		}
 
 		if ro.Plugins != nil {
@@ -735,6 +735,20 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables *[]*enti
 	}
 
 	up.Nodes = nodes
+}
+
+func (h *Handler) VariabilizationOfNode2(obj *interface{}, variables *[]*entity.Variable, nodeName string) {
+	nodes := entity.NodesFormat(obj).([]*entity.Node)
+
+	for index, node := range nodes {
+		key := "Route." + nodeName + ".Host." + strconv.Itoa(index)
+		AddVariable(variables, &entity.Variable{
+			Key:   key,
+			Value: node.Host,
+		})
+
+		node.Host = "${" + key + "}"
+	}
 }
 
 func (h *Handler) VariabilizationOfNode(nodes *[]*entity.Node, variables *[]*entity.Variable, nodeName string) {
