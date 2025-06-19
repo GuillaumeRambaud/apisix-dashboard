@@ -624,10 +624,10 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 	}
 
 	for _, upstream := range upstreamList.Rows {
-		up := upstream.(*entity.Upstream)
+		up := *upstream.(*entity.Upstream)
 		h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
-		upstreams = append(upstreams, up)
+		upstreams = append(upstreams, &up)
 	}
 
 	conf.Upstreams = upstreams
