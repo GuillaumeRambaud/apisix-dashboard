@@ -587,28 +587,13 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 	for _, route := range routeList.Rows {
 		ro := route.(*entity.Route)
 
-		//Variablization of route host
-		// if ro.Host != "" {
-		// 	key := "Route.Host"
-		// 	AddVariable(&conf.Variables, &entity.Variable{
-		// 		Key:   key,
-		// 		Value: ro.Host,
-		// 	})
-
-		// 	ro.Host = "${" + key + "}"
-		// }
-
 		ro.Host = h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
 
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
 				key := ro.Name + ".Hosts" + strconv.Itoa(index)
-				AddVariable(&conf.Variables, &entity.Variable{
-					Key:   key,
-					Value: host,
-				})
-
-				ro.Hosts[index] = "${" + key + "}"
+				host = h.HostToVar(ro.Host, &conf.Variables, key)
+				ro.Hosts[index] = host
 			}
 		}
 
@@ -681,15 +666,19 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 		key := nodeName + ".Host." + strconv.Itoa(index)
 		log.Infof("NodeToVar key: %s", key)
 
-		// node.Host = h.HostToVar(node.Host, variables, key)
+		node.Host = h.HostToVar(node.Host, variables, key)
 
-		log.Infof("NodeToVar node.Host: %s", node.Host)
-		AddVariable(variables, &entity.Variable{
-			Key:   key,
-			Value: node.Host,
-		})
+		// log.Infof("NodeToVar node.Host: %s", node.Host)
+		// AddVariable(variables, &entity.Variable{
+		// 	Key:   key,
+		// 	Value: node.Host,
+		// })
 
-		node.Host = "${" + key + "}"
+		// node.Host = "${" + key + "}"
+	}
+
+	for index, node := range nodes {
+		log.Infof("%d NodeToVar node: %s", index, node.Host)
 	}
 }
 
