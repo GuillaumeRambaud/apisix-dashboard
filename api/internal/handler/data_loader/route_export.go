@@ -594,7 +594,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		//Variablization of route host
 		if ro.Host != "" {
 			key := "Route.Host"
-			AddVariable(conf.Variables, &entity.Variable{
+			AddVariable(&conf.Variables, &entity.Variable{
 				Key:   key,
 				Value: ro.Host,
 			})
@@ -605,7 +605,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		if ro.Hosts != nil {
 			for index, host := range ro.Hosts {
 				key := ro.Name + ".Hosts" + strconv.Itoa(index)
-				AddVariable(conf.Variables, &entity.Variable{
+				AddVariable(&conf.Variables, &entity.Variable{
 					Key:   key,
 					Value: host,
 				})
@@ -688,7 +688,7 @@ func (h *Handler) VariablizationOfNodeUpstream(up *entity.Upstream, variables []
 
 	for index, node := range nodes {
 		key := "Upstream." + up.Name + "_" + up.ID.(string) + ".Host." + strconv.Itoa(index)
-		AddVariable(variables, &entity.Variable{
+		AddVariable(&variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -706,7 +706,7 @@ func (h *Handler) VariablizationOfNodeService(se *entity.Service, variables []*e
 
 	for index, node := range nodes {
 		key := "Service." + se.Name + "_" + se.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-		AddVariable(variables, &entity.Variable{
+		AddVariable(&variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -726,7 +726,7 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables []*entit
 
 	for index, node := range nodes {
 		key := "Route." + ro.Name + "_" + ro.ID.(string) + ".Upstream.Host." + strconv.Itoa(index)
-		AddVariable(variables, &entity.Variable{
+		AddVariable(&variables, &entity.Variable{
 			Key:   key,
 			Value: node.Host,
 		})
@@ -750,7 +750,7 @@ func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeN
 							newSecret := "Route." + routeName + ".Plugin.OnBehalf"
 							pluginMap[key] = "${" + newSecret + "}"
 
-							AddVariable(variables, &entity.Variable{
+							AddVariable(&variables, &entity.Variable{
 								Key:   newSecret,
 								Value: fmt.Sprintf("%v", value),
 							})
@@ -760,7 +760,7 @@ func (h *Handler) VariablizationOfPlugins(plugins map[string]interface{}, routeN
 							newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
 							pluginMap[key] = "${" + newSecret + "}"
 
-							AddVariable(variables, &entity.Variable{
+							AddVariable(&variables, &entity.Variable{
 								Key:   newSecret,
 								Value: fmt.Sprintf("%v", value),
 							})
@@ -837,18 +837,18 @@ func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
 }
 
 // AddVariable adds a Variable to the slice if the Key doesn't already exist.
-func AddVariable(variables []*entity.Variable, newVar *entity.Variable) {
+func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
 
-	log.Infof("Start Variables: " + utils.InterfaceToString(len(variables)))
+	log.Infof("Start Variables: " + utils.InterfaceToString(len(*variables)))
 	log.Infof("New Variable: %s", newVar.Key)
 
-	for _, v := range variables {
+	for _, v := range *variables {
 		if v.Key == newVar.Key {
 			// Update value if the key exists (optional)
 			v.Value = newVar.Value
 			return
 		}
 	}
-	variables = append(variables, newVar)
-	log.Infof("End Variables: " + utils.InterfaceToString(len(variables)))
+	*variables = append(*variables, newVar)
+	log.Infof("End Variables: " + utils.InterfaceToString(len(*variables)))
 }
