@@ -641,6 +641,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 	for _, upstream := range upstreamList.Rows {
 		up := upstream.(*entity.Upstream)
 		h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
+		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, up)
 	}
 
@@ -678,9 +679,11 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 
 	for index, node := range nodes {
 		key := nodeName + ".Host." + strconv.Itoa(index)
-		log.Infof("NodeToVar: %s", key)
+		log.Infof("NodeToVar key: %s", key)
 
 		node.Host = h.HostToVar(node.Host, variables, key)
+
+		log.Infof("NodeToVar node.Host: %s", node.Host)
 		// AddVariable(variables, &entity.Variable{
 		// 	Key:   key,
 		// 	Value: node.Host,
