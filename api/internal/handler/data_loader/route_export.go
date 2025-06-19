@@ -665,7 +665,7 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	for _, service := range serviceList.Rows {
 		se := service.(*entity.Service)
 
-		if !reflect.DeepEqual(se.Upstream, entity.UpstreamImport{}) {
+		if se.UpstreamID == nil {
 			h.VariabilizationOfNode(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
 		}
 
