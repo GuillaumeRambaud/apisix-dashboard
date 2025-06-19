@@ -736,9 +736,9 @@ func (h *Handler) VariablizationOfNodeRoute(ro *entity.Route, variables *[]*enti
 }
 
 func (h *Handler) VariabilizationOfNode(nodesInterface interface{}, variables *[]*entity.Variable, nodeName string) {
-	nodes := entity.NodesFormat(nodesInterface).([]*entity.Node)
+	nodes := entity.NodesFormat(nodesInterface)
 
-	for index, node := range nodes {
+	for index, node := range nodes.([]*entity.Node) {
 		key := "Route." + nodeName + ".Host." + strconv.Itoa(index)
 		AddVariable(variables, &entity.Variable{
 			Key:   key,
