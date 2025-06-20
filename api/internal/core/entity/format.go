@@ -62,7 +62,6 @@ func NodesFormat(obj interface{}) interface{} {
 	nodes := make([]*Node, 0)
 	switch objType := obj.(type) {
 	case map[string]float64:
-		log.Infof("nodes type: %v", objType)
 		value := obj.(map[string]float64)
 		for key, val := range value {
 			node, err := mapKV2Node(key, val)
@@ -73,7 +72,6 @@ func NodesFormat(obj interface{}) interface{} {
 		}
 		return nodes
 	case map[string]interface{}:
-		log.Infof("nodes type: %v", objType)
 		value := obj.(map[string]interface{})
 		for key, val := range value {
 			node, err := mapKV2Node(key, val.(float64))
@@ -84,10 +82,8 @@ func NodesFormat(obj interface{}) interface{} {
 		}
 		return nodes
 	case []*Node:
-		log.Infof("nodes type: %v", objType)
 		return obj
 	case []interface{}:
-		log.Infof("nodes type []interface{}: %v", objType)
 		list := obj.([]interface{})
 		for _, v := range list {
 			val := v.(map[string]interface{})
