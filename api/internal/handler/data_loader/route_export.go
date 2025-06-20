@@ -664,8 +664,6 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 
 	for index, node := range nodes {
 		key := nodeName + ".Host." + strconv.Itoa(index)
-		log.Infof("NodeToVar key: %s", key)
-
 		node.Host = h.HostToVar(node.Host, variables, key)
 	}
 
@@ -673,7 +671,6 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 }
 
 func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) string {
-	log.Infof("HostToVar: %s", host)
 	if host != "" {
 		key := nodeName
 		AddVariable(variables, &entity.Variable{
@@ -684,7 +681,6 @@ func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName
 		host = "${" + key + "}"
 
 	}
-	log.Infof("HostToVar new : %s", host)
 	return host
 }
 
@@ -692,36 +688,68 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 
 	//Variabilization of plugins
 	for plugin := range plugins {
-		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
-			if plugins[plugin] != nil {
+
+		switch plugin {
+			case "onbehalf-jwt", "3ds-cas-auth", "3ds-cas-sso", "key-auth", "proxy-rewrite":
 				if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
 					for key, value := range pluginMap {
-						if key == "secret" {
-							newSecret := "Route." + routeName + ".Plugin.OnBehalf"
-							pluginMap[key] = "${" + newSecret + "}"
+						switch key {
+							case "idp_url", "encryption_key", "encryption_salt", "key", "secret":
+								newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+								pluginMap[key] = "${" + newSecret + "}"
 
-							AddVariable(variables, &entity.Variable{
-								Key:   newSecret,
-								Value: fmt.Sprintf("%v", value),
-							})
+								AddVariable(variables, &entity.Variable{
+									Key:   newSecret,
+									Value: fmt.Sprintf("%v", value),
+								})
+							case "headers":
+								log.Infof("Plugin %s has headers: %v", plugin, value)
+								if headers, ok := value.(map[string]interface{}); ok {
+									for headerKey, headerValue := range headers {
+										log.Infof("Header %s: %v", headerKey, headerValue)
+									}
+
+								}
 						}
-
-						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" || key == "key" {
-							newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
-							pluginMap[key] = "${" + newSecret + "}"
-
-							AddVariable(variables, &entity.Variable{
-								Key:   newSecret,
-								Value: fmt.Sprintf("%v", value),
-							})
-						}
-					}
 				}
 			}
-		}
 	}
 }
+
+// func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
+
+// 	//Variabilization of plugins
+// 	for plugin := range plugins {
+// 		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
+// 		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth"  {
+// 			if plugins[plugin] != nil {
+// 				if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
+// 					for key, value := range pluginMap {
+// 						if key == "secret" {
+// 							newSecret := "Route." + routeName + ".Plugin.OnBehalf"
+// 							pluginMap[key] = "${" + newSecret + "}"
+
+// 							AddVariable(variables, &entity.Variable{
+// 								Key:   newSecret,
+// 								Value: fmt.Sprintf("%v", value),
+// 							})
+// 						}
+
+// 						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" || key == "key" {
+// 							newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+// 							pluginMap[key] = "${" + newSecret + "}"
+
+// 							AddVariable(variables, &entity.Variable{
+// 								Key:   newSecret,
+// 								Value: fmt.Sprintf("%v", value),
+// 							})
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 // AddVariable adds a Variable to the slice if the Key doesn't already exist.
 func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
