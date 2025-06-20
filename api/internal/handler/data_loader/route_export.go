@@ -690,11 +690,11 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 	for plugin := range plugins {
 
 		switch plugin {
-		case "onbehalf-jwt", "3ds-cas-auth", "3ds-cas-sso", "key-auth", "proxy-rewrite":
+		case "onbehalf-jwt", "3ds-cas-auth", "3ds-cas-sso", "key-auth", "proxy-rewrite", "file-logger":
 			if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
 				for key, value := range pluginMap {
 					switch key {
-					case "idp_url", "encryption_key", "encryption_salt", "key", "secret":
+					case "idp_url", "encryption_key", "encryption_salt", "key", "secret", "path":
 						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
 						pluginMap[key] = "${" + newSecret + "}"
 
@@ -724,41 +724,6 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 		}
 	}
 }
-
-// func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
-
-// 	//Variabilization of plugins
-// 	for plugin := range plugins {
-// 		//Specific plugin processing for onbehalf-jwt & 3ds-cas-auth
-// 		if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth"  {
-// 			if plugins[plugin] != nil {
-// 				if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
-// 					for key, value := range pluginMap {
-// 						if key == "secret" {
-// 							newSecret := "Route." + routeName + ".Plugin.OnBehalf"
-// 							pluginMap[key] = "${" + newSecret + "}"
-
-// 							AddVariable(variables, &entity.Variable{
-// 								Key:   newSecret,
-// 								Value: fmt.Sprintf("%v", value),
-// 							})
-// 						}
-
-// 						if key == "idp_url" || key == "encryption_key" || key == "encryption_salt" || key == "key" {
-// 							newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
-// 							pluginMap[key] = "${" + newSecret + "}"
-
-// 							AddVariable(variables, &entity.Variable{
-// 								Key:   newSecret,
-// 								Value: fmt.Sprintf("%v", value),
-// 							})
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// }
 
 // AddVariable adds a Variable to the slice if the Key doesn't already exist.
 func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
