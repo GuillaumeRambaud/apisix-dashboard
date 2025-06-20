@@ -181,6 +181,24 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 							}
 						}
 					}
+				} else if plugin == "proxy-rewrite" {
+					if route.Plugins[plugin] != nil {
+						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								if key == "headers" {
+									if headers, ok := value.(map[string]interface{}); ok {
+										for headerKey, headerValue := range headers {
+											variable := getVariable(importData.Variables, fmt.Sprintf("%v", headerValue))
+											if variable != nil {
+												headers[headerKey] = variable.Value
+											}
+										}
+										pluginMap[key] = headers
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
