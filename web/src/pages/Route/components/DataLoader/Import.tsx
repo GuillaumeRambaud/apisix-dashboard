@@ -213,22 +213,6 @@ const DataLoaderImport: React.FC<Props> = (props) => {
                   );
                 }}
               </Form.Item>
-              {/* <Form.Item
-                name="task_name"
-                label={formatMessage({ id: 'page.route.data_loader.labels.task_name' })}
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'page.route.data_loader.tips.input_task_name' }),
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={formatMessage({
-                    id: 'page.route.data_loader.tips.input_task_name',
-                  })}
-                />
-              </Form.Item> */}
             </Col>
           </Row>
           <Option type={importType}></Option>
