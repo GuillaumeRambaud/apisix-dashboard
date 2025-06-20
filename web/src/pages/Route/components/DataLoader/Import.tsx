@@ -186,7 +186,11 @@ const DataLoaderImport: React.FC<Props> = (props) => {
                 shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
               >
                 {({ getFieldValue }) => {
-                  const isOpenAPI = getFieldValue('type') === 'openapi3';
+                  const type = getFieldValue('type');
+                  if (type === 'yaml_config') {
+                    return null; // Don't render the field
+                  }
+                  const isOpenAPI = type === 'openapi3';
                   return (
                     <Form.Item
                       name="task_name"
