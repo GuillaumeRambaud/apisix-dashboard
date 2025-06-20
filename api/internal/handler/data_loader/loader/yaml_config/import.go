@@ -89,13 +89,31 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if service.Plugins != nil {
 			for plugin := range service.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "file-logger" {
 					if service.Plugins[plugin] != nil {
 						if pluginMap, ok := service.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
 								variable := getVariable(importData.Variables, fmt.Sprintf("%v", value))
 								if variable != nil {
 									pluginMap[key] = variable.Value
+								}
+							}
+						}
+					}
+				} else if plugin == "proxy-rewrite" {
+					if service.Plugins[plugin] != nil {
+						if pluginMap, ok := service.Plugins[plugin].(map[string]interface{}); ok {
+							for key, value := range pluginMap {
+								if key == "headers" {
+									if headers, ok := value.(map[string]interface{}); ok {
+										for headerKey, headerValue := range headers {
+											variable := getVariable(importData.Variables, fmt.Sprintf("%v", headerValue))
+											if variable != nil {
+												headers[headerKey] = variable.Value
+											}
+										}
+										pluginMap[key] = headers
+									}
 								}
 							}
 						}
@@ -170,7 +188,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if route.Plugins != nil {
 			for plugin := range route.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "file-logger" {
 					if route.Plugins[plugin] != nil {
 						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
