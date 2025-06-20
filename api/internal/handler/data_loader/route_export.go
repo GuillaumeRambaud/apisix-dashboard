@@ -706,9 +706,17 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 						log.Infof("Plugin %s has headers: %v", plugin, value)
 						if headers, ok := value.(map[string]interface{}); ok {
 							for headerKey, headerValue := range headers {
-								log.Infof("Header %s: %v", headerKey, headerValue)
-							}
+								if headerKey == "Authorization" || headerKey == "authorization" {
+									newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key + "." + headerKey
+									headers[headerKey] = "${" + newSecret + "}"
 
+									AddVariable(variables, &entity.Variable{
+										Key:   newSecret,
+										Value: fmt.Sprintf("%v", headerValue),
+									})
+								}
+							}
+							pluginMap[key] = headers
 						}
 					}
 				}
