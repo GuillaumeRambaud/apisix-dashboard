@@ -684,42 +684,120 @@ func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName
 	return host
 }
 
+// func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
+
+// 	validPlugins := map[string]bool{
+// 		"onbehalf-jwt":  true,
+// 		"3ds-cas-auth":  true,
+// 		"3ds-cas-sso":   true,
+// 		"key-auth":      true,
+// 		"proxy-rewrite": true,
+// 		"file-logger":   true,
+// 	}
+
+// 	//Variabilization of plugins
+// 	for plugin := range plugins {
+// 		if validPlugins[plugin] {
+// 			if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
+// 				for key, value := range pluginMap {
+// 					if (key == "idp_url" || key == "encryption_key" || key == "encryption_salt") && (plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso") {
+// 						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+// 						pluginMap[key] = "${" + newSecret + "}"
+
+// 						AddVariable(variables, &entity.Variable{
+// 							Key:   newSecret,
+// 							Value: fmt.Sprintf("%v", value),
+// 						})
+// 					} else if (key == "key") && (plugin == "key-auth" || plugin == "onbehalf-jwt") {
+// 						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+// 						pluginMap[key] = "${" + newSecret + "}"
+
+// 						AddVariable(variables, &entity.Variable{
+// 							Key:   newSecret,
+// 							Value: fmt.Sprintf("%v", value),
+// 						})
+// 					} else if (key == "secret") && (plugin == "onbehalf-jwt") {
+// 						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+// 						pluginMap[key] = "${" + newSecret + "}"
+
+// 						AddVariable(variables, &entity.Variable{
+// 							Key:   newSecret,
+// 							Value: fmt.Sprintf("%v", value),
+// 						})
+// 					} else if (key == "path") && (plugin == "file-logger") {
+// 						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
+// 						pluginMap[key] = "${" + newSecret + "}"
+
+// 						AddVariable(variables, &entity.Variable{
+// 							Key:   newSecret,
+// 							Value: fmt.Sprintf("%v", value),
+// 						})
+// 					} else if key == "headers" && plugin == "proxy-rewrite" {
+// 						if headers, ok := value.(map[string]interface{}); ok {
+// 							for headerKey, headerValue := range headers {
+// 								if headerKey == "Authorization" || headerKey == "authorization" {
+// 									newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key + "." + headerKey
+// 									headers[headerKey] = "${" + newSecret + "}"
+
+// 									AddVariable(variables, &entity.Variable{
+// 										Key:   newSecret,
+// 										Value: fmt.Sprintf("%v", headerValue),
+// 									})
+// 								}
+// 							}
+// 							pluginMap[key] = headers
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
 func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
+	validPlugins := map[string][]string{
+		"onbehalf-jwt":  {"key", "secret"},
+		"3ds-cas-auth":  {"idp_url", "encryption_key", "encryption_salt"},
+		"3ds-cas-sso":   {"idp_url", "encryption_key", "encryption_salt"},
+		"key-auth":      {"key"},
+		"file-logger":   {"path"},
+		"proxy-rewrite": {"headers"},
+	}
 
-	//Variabilization of plugins
-	for plugin := range plugins {
+	for plugin, config := range plugins {
+		// Skip unsupported plugins
+		keysOfInterest, ok := validPlugins[plugin]
+		if !ok {
+			continue
+		}
 
-		switch plugin {
-		case "onbehalf-jwt", "3ds-cas-auth", "3ds-cas-sso", "key-auth", "proxy-rewrite", "file-logger":
-			if pluginMap, ok := plugins[plugin].(map[string]interface{}); ok {
-				for key, value := range pluginMap {
-					switch key {
-					case "idp_url", "encryption_key", "encryption_salt", "key", "secret", "path":
-						newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key
-						pluginMap[key] = "${" + newSecret + "}"
+		pluginMap, ok := config.(map[string]interface{})
+		if !ok {
+			continue
+		}
 
-						AddVariable(variables, &entity.Variable{
-							Key:   newSecret,
-							Value: fmt.Sprintf("%v", value),
-						})
-					case "headers":
-						log.Infof("Plugin %s has headers: %v", plugin, value)
-						if headers, ok := value.(map[string]interface{}); ok {
-							for headerKey, headerValue := range headers {
-								if headerKey == "Authorization" || headerKey == "authorization" {
-									newSecret := "Route." + routeName + ".Plugin." + plugin + "." + key + "." + headerKey
-									headers[headerKey] = "${" + newSecret + "}"
+		for _, key := range keysOfInterest {
+			value, exists := pluginMap[key]
+			if !exists {
+				continue
+			}
 
-									AddVariable(variables, &entity.Variable{
-										Key:   newSecret,
-										Value: fmt.Sprintf("%v", headerValue),
-									})
-								}
-							}
-							pluginMap[key] = headers
+			// Special handling for proxy-rewrite.headers.Authorization
+			if plugin == "proxy-rewrite" && key == "headers" {
+				if headers, ok := value.(map[string]interface{}); ok {
+					for headerKey, headerValue := range headers {
+						if strings.EqualFold(headerKey, "authorization") {
+							newSecret := fmt.Sprintf("Route.%s.Plugin.%s.%s.%s", routeName, plugin, key, headerKey)
+							headers[headerKey] = "${" + newSecret + "}"
+							AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", headerValue)})
 						}
 					}
+					pluginMap[key] = headers
 				}
+			} else {
+				newSecret := fmt.Sprintf("Route.%s.Plugin.%s.%s", routeName, plugin, key)
+				pluginMap[key] = "${" + newSecret + "}"
+				AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", value)})
 			}
 		}
 	}
