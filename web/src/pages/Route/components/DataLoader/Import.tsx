@@ -169,7 +169,7 @@ const DataLoaderImport: React.FC<Props> = (props) => {
                 initialValue={importType}
               >
                 <Select onChange={(value: ImportType) => setImportType(value)}>
-                <Select.Option value="yaml_config">
+                  <Select.Option value="yaml_config">
                     {formatMessage({ id: 'page.route.data_loader.types.yaml_config' })}
                   </Select.Option>
                   <Select.Option value="openapi3">
@@ -183,6 +183,37 @@ const DataLoaderImport: React.FC<Props> = (props) => {
             </Col>
             <Col span={12}>
               <Form.Item
+                shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
+              >
+                {({ getFieldValue }) => {
+                  const isOpenAPI = getFieldValue('type') === 'openapi3';
+                  return (
+                    <Form.Item
+                      name="task_name"
+                      label={formatMessage({ id: 'page.route.data_loader.labels.task_name' })}
+                      rules={
+                        isOpenAPI
+                          ? [
+                              {
+                                required: true,
+                                message: formatMessage({
+                                  id: 'page.route.data_loader.tips.input_task_name',
+                                }),
+                              },
+                            ]
+                          : []
+                      }
+                    >
+                      <Input
+                        placeholder={formatMessage({
+                          id: 'page.route.data_loader.tips.input_task_name',
+                        })}
+                      />
+                    </Form.Item>
+                  );
+                }}
+              </Form.Item>
+              {/* <Form.Item
                 name="task_name"
                 label={formatMessage({ id: 'page.route.data_loader.labels.task_name' })}
                 rules={[
@@ -197,7 +228,7 @@ const DataLoaderImport: React.FC<Props> = (props) => {
                     id: 'page.route.data_loader.tips.input_task_name',
                   })}
                 />
-              </Form.Item>
+              </Form.Item> */}
             </Col>
           </Row>
           <Option type={importType}></Option>

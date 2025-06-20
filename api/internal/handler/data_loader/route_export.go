@@ -626,7 +626,6 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 	for _, upstream := range upstreamList.Rows {
 		up := *upstream.(*entity.Upstream)
 		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
-		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, &up)
 	}
 
@@ -663,7 +662,7 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := nodeName + ".Host." + strconv.Itoa(index)
+		key := fmt.Sprintf("%s.Host.%d", nodeName, index)
 		node.Host = h.HostToVar(node.Host, variables, key)
 	}
 
@@ -717,7 +716,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 				if headers, ok := value.(map[string]interface{}); ok {
 					for headerKey, headerValue := range headers {
 						if strings.EqualFold(headerKey, "authorization") {
-							newSecret := fmt.Sprintf("Route.%s.Plugin.%s.%s.%s", routeName, plugin, key, headerKey)
+							newSecret := "Route.file-logger.Path"
 							headers[headerKey] = "${" + newSecret + "}"
 							AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", headerValue)})
 						}
