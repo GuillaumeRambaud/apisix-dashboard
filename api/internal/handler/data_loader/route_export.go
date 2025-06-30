@@ -557,7 +557,11 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 	}
 
 	for _, consumer := range consumerList.Rows {
-		con := consumer.(*entity.Consumer)
+		con, err := DeepCopy(consumer.(*entity.Consumer))
+
+		if err != nil {
+			return err
+		}
 
 		if con.Plugins != nil {
 			h.PluginsToVar(con.Plugins, "Consumer", con.Username, &conf.Variables)
@@ -581,9 +585,7 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 	}
 
 	for _, route := range routeList.Rows {
-
-		ro, err := deepCopyRoute(route.(*entity.Route))
-		// ro := route.(*entity.Route)
+		ro, err := DeepCopy(route.(*entity.Route))
 
 		if err != nil {
 			return err
@@ -626,10 +628,15 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 	}
 
 	for _, upstream := range upstreamList.Rows {
-		up := *upstream.(*entity.Upstream)
+		up, err := DeepCopy(upstream.(*entity.Upstream))
+
+		if err != nil {
+			return err
+		}
+
 		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream", up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
-		upstreams = append(upstreams, &up)
+		upstreams = append(upstreams, up)
 	}
 
 	conf.Upstreams = upstreams
@@ -647,7 +654,11 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	}
 
 	for _, service := range serviceList.Rows {
-		se := service.(*entity.Service)
+		se, err := DeepCopy(service.(*entity.Service))
+
+		if err != nil {
+			return err
+		}
 
 		if se.Upstream != nil {
 			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service", se.Name)
@@ -771,4 +782,20 @@ func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
 	}
 
 	return dst, nil
+}
+
+func DeepCopy[T any](src *T) (*T, error) {
+	// Serialize the source to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal object: %w", err)
+	}
+
+	// Deserialize into a new instance of T
+	var dst T
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal object: %w", err)
+	}
+
+	return &dst, nil
 }
