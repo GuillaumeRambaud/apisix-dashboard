@@ -22,6 +22,7 @@ import (
 
 	"github.com/apisix/manager-api/internal/core/entity"
 	"github.com/apisix/manager-api/internal/handler/data_loader/loader"
+	"github.com/apisix/manager-api/internal/log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -221,8 +222,11 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			}
 		}
 
+		log.Infof("log Route Host: %s", route.Host)
 		if route.Host != "" {
 			variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
+			log.Infof("log Route Host Key: %s", variable.Key)
+			log.Infof("log Route Host Value: %s", variable.Value)
 			if variable != nil {
 				route.Host = variable.Value
 			}
