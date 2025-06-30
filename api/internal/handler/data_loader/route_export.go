@@ -559,10 +559,6 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 	for _, consumer := range consumerList.Rows {
 		con := consumer.(*entity.Consumer)
 
-		if err != nil {
-			return err
-		}
-
 		if con.Plugins != nil {
 			h.PluginsToVar(con.Plugins, "Consumer", con.Username, &conf.Variables)
 		}
@@ -585,7 +581,13 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 	}
 
 	for _, route := range routeList.Rows {
-		ro := route.(*entity.Route)
+
+		ro, err := deepCopyRoute(route.(*entity.Route))
+		// ro := route.(*entity.Route)
+
+		if err != nil {
+			return err
+		}
 
 		ro.Host = h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
 
@@ -753,4 +755,20 @@ func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
 		}
 	}
 	*variables = append(*variables, newVar)
+}
+
+func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
+	// Serialize the source slice to JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal routes: %w", err)
+	}
+
+	// Deserialize the JSON into a new slice
+	var dst *entity.Route
+	if err := json.Unmarshal(data, &dst); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal routes: %w", err)
+	}
+
+	return dst, nil
 }
