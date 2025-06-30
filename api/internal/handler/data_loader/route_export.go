@@ -564,7 +564,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 		}
 
 		if con.Plugins != nil {
-			h.PluginsToVar(con.Plugins, con.Username, &conf.Variables)
+			h.PluginsToVar(con.Plugins, "Consumer", con.Username, &conf.Variables)
 		}
 
 		consumers = append(consumers, consumer.(*entity.Consumer))
@@ -599,11 +599,11 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 
 		//Variablization of route upstream
 		if ro.Upstream != nil {
-			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route."+ro.Name)
+			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route", ro.Name)
 		}
 
 		if ro.Plugins != nil {
-			h.PluginsToVar(ro.Plugins, ro.Name, &conf.Variables)
+			h.PluginsToVar(ro.Plugins, "Route", ro.Name, &conf.Variables)
 		}
 
 		routes = append(routes, ro)
@@ -625,7 +625,7 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 
 	for _, upstream := range upstreamList.Rows {
 		up := *upstream.(*entity.Upstream)
-		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream."+up.Name)
+		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream", up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, &up)
 	}
@@ -648,7 +648,11 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 		se := service.(*entity.Service)
 
 		if se.Upstream != nil {
-			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service."+se.Name)
+			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service", se.Name)
+		}
+
+		if se.Plugins != nil {
+			h.PluginsToVar(se.Plugins, "Service", se.Name, &conf.Variables)
 		}
 
 		services = append(services, se)
@@ -659,12 +663,11 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 	return err
 }
 
-func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, nodeName string) []*entity.Node {
+func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, nodeObj string, nodeName string) []*entity.Node {
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := fmt.Sprintf("%s.Host.%d", nodeName, index)
-		fmt.Sprintf("%s.Host.%d", nodeName, index)
+		key := fmt.Sprintf("%s.%s.Host.%d", nodeObj, nodeName, index)
 		node.Host = h.HostToVar(node.Host, variables, key)
 	}
 
@@ -685,7 +688,7 @@ func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName
 	return host
 }
 
-func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string, variables *[]*entity.Variable) {
+func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, objName string, variables *[]*entity.Variable) {
 	validPlugins := map[string][]string{
 		"onbehalf-jwt":  {"key", "secret"},
 		"3ds-cas-auth":  {"idp_url", "encryption_key", "encryption_salt"},
@@ -718,7 +721,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 				if headers, ok := value.(map[string]interface{}); ok {
 					for headerKey, headerValue := range headers {
 						if strings.EqualFold(headerKey, "authorization") {
-							newSecret := fmt.Sprintf("Route.%s.Plugin.%s.%s.%s", routeName, plugin, key, headerKey)
+							newSecret := fmt.Sprintf("%s.%s.Plugin.%s.%s.%s", object, objName, plugin, key, headerKey)
 							headers[headerKey] = "${" + newSecret + "}"
 							AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", headerValue)})
 						}
@@ -730,7 +733,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, routeName string,
 				if plugin == "file-logger" && key == "path" {
 					newSecret = "Route.file-logger.Path"
 				} else {
-					newSecret = fmt.Sprintf("Route.%s.Plugin.%s.%s", routeName, plugin, key)
+					newSecret = fmt.Sprintf("%s.%s.Plugin.%s.%s", object, objName, plugin, key)
 				}
 
 				pluginMap[key] = "${" + newSecret + "}"
