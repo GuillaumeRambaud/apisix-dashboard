@@ -567,7 +567,7 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 			h.PluginsToVar(con.Plugins, "Consumer", con.Username, &conf.Variables)
 		}
 
-		consumers = append(consumers, consumer.(*entity.Consumer))
+		consumers = append(consumers, con)
 	}
 
 	conf.Consumers = consumers
