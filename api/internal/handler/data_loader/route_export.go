@@ -680,7 +680,7 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 	nodes := entity.NodesFormat(obj).([]*entity.Node)
 
 	for index, node := range nodes {
-		key := fmt.Sprintf("%s.%s.Host.%d", nodeObj, nodeName, index)
+		key := fmt.Sprintf("%s.%s.Host.%d", nodeObj, strings.ReplaceAll(nodeName, " ", "_"), index)
 		node.Host = h.HostToVar(node.Host, variables, key)
 	}
 
@@ -689,6 +689,7 @@ func (h *Handler) NodeToVar(obj interface{}, variables *[]*entity.Variable, node
 
 func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName string) string {
 	if host != "" {
+		strings.ReplaceAll(nodeName, " ", "_")
 		key := nodeName
 		AddVariable(variables, &entity.Variable{
 			Key:   key,
@@ -710,6 +711,8 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 		"file-logger":   {"path"},
 		"proxy-rewrite": {"headers"},
 	}
+
+	objName = strings.ReplaceAll(objName, " ", "_")
 
 	for plugin, config := range plugins {
 		// Skip unsupported plugins
