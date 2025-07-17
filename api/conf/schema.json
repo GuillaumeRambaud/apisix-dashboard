@@ -3238,7 +3238,7 @@
 					},
 					"cookie_name": {
 						"type": "string",
-						"default": "DISP_SESSION_123456"
+						"default": "WORKER_SESSION"
 					}
 				},
 				"required": [
