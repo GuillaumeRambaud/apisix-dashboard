@@ -8086,13 +8086,16 @@
 				"properties": {
 					"key": {
 						"type": "string"
-						},
-						"legal_entity_id": {
-							"type": "string"
-						}
+					},
+					"legal_entity_id": {
+						"type": "string"
+					},
+					"user_id":{
+						"type": "string"
+					}
 				},
 				"required": [
-				"key", "legal_entity_id"
+				"key", "legal_entity_id", "user_id"
 				],
 				"title": "work with consumer object",
     			"type": "object"
@@ -8103,21 +8106,17 @@
 					"issuer": {
 						"type": "string"
 					},
-					"subject": {
-						"type": "string"
-					},
 					"secret": {
 						"type": "string",
 						"default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
 					},
 					"header": {
-						"default": "apikey",
+						"default": "X-API-KEY",
 						"type": "string"
 					}
 				},
 				"required": [
 					"issuer",
-					"subject",
 					"secret"
 				],
 				"type": "object"
