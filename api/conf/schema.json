@@ -3418,6 +3418,29 @@
 			},
 			"version": 0.1
 		},
+		"api-key-generator": {
+			"priority": 10000,
+			"schema": {
+				"$comment": "this is a mark for our injected plugin schema",
+				"properties": {
+				"key_length": {
+					"type": "integer",
+					"minimum": 8,
+					"maximum": 64,
+					"default": 32
+				},
+				"bcrypt_rounds": {
+					"type": "integer",
+					"minimum": 4,
+					"maximum": 16,
+					"default": 12
+				}
+				},
+				"required": [],
+				"type": "object"
+			},
+			"version": 0.1
+		},
 		"authz-casbin": {
 			"metadata_schema": {
 				"properties": {
