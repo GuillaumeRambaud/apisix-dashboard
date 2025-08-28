@@ -708,6 +708,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 		"3ds-cas-auth":  {"idp_url", "encryption_key", "encryption_salt"},
 		"3ds-cas-sso":   {"idp_url", "encryption_key", "encryption_salt"},
 		"key-auth":      {"key"},
+		"hashed-key-auth":      {"key"},
 		"file-logger":   {"path"},
 		"proxy-rewrite": {"headers"},
 	}

@@ -324,7 +324,8 @@ const PluginDetail: React.FC<Props> = ({
     pluginType === 'auth' &&
     schemaType !== 'consumer' &&
     monacoMode !== monacoModeList.UIForm &&
-    targetPluginName !== 'key-auth';
+    targetPluginName !== 'key-auth' &&
+    targetPluginName !== 'hashed-key-auth';
 
   return (
     <Drawer

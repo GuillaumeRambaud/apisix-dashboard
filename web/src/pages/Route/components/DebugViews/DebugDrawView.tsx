@@ -198,6 +198,8 @@ const DebugDrawView: React.FC<RouteModule.DebugDrawProps> = (props) => {
           Authorization: [formData.Authorization],
         };
       case 'key-auth':
+      case 'hashed-key-auth':
+      case 'onbehalf-jwt':
         return {
           ...formHeaderData,
           ...userHeaderData,

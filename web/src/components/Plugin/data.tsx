@@ -30,6 +30,7 @@ export const PLUGIN_ICON_LIST: Record<string, any> = {
   cors: <IconFont name="iconcors" />,
   'wolf-rbac': <IconFont name="iconwolf-rbac" />,
   'key-auth': <IconFont name="iconkey-auth" />,
+  'hashed-key-auth': <IconFont name="iconkey-auth" />,
   'request-validation': <IconFont name="iconrequest-validation" />,
   'fault-injection': <IconFont name="iconfault-injection" />,
   'consumer-restriction': <IconFont name="iconconsumer-restriction" />,
@@ -168,6 +169,9 @@ export const PLUGIN_LIST = {
     type: PluginType.other,
   },
   'hmac-auth': {
+    type: PluginType.authentication,
+  },
+  'hashed-key-auth': {
     type: PluginType.authentication,
   },
   'http-logger': {

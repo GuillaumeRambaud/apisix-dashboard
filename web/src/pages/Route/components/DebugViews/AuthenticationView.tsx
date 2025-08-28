@@ -78,6 +78,7 @@ const AuthenticationView: React.FC<RouteModule.DebugViewProps> = (props) => {
           </Form.Item>
         );
       case 'key-auth':
+      case 'hashed-key-auth':
       case 'onbehalf-jwt':
         return (
           <Form.Item

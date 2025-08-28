@@ -89,7 +89,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if service.Plugins != nil {
 			for plugin := range service.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "file-logger" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "hashed-key-auth" || plugin == "file-logger" {
 					if service.Plugins[plugin] != nil {
 						if pluginMap, ok := service.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
@@ -188,7 +188,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if route.Plugins != nil {
 			for plugin := range route.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "file-logger" {
+				if plugin == "onbehalf-jwt" || plugin == "3ds-cas-auth" || plugin == "3ds-cas-sso" || plugin == "key-auth" || plugin == "hashed-key-auth" || plugin == "file-logger" {
 					if route.Plugins[plugin] != nil {
 						if pluginMap, ok := route.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {
@@ -323,7 +323,7 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 
 		if consumer.Plugins != nil {
 			for plugin := range consumer.Plugins {
-				if plugin == "onbehalf-jwt" || plugin == "key-auth" {
+				if plugin == "onbehalf-jwt" || plugin == "key-auth" || plugin == "hashed-key-auth" {
 					if consumer.Plugins[plugin] != nil {
 						if pluginMap, ok := consumer.Plugins[plugin].(map[string]interface{}); ok {
 							for key, value := range pluginMap {

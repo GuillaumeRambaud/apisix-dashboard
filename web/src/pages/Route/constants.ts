@@ -83,7 +83,7 @@ export const DEFAULT_STEP_3_DATA: RouteModule.Step3Data = {
   plugin_config_id: '',
 };
 
-export const AUTH_LIST = ['basic-auth', 'jwt-auth', 'key-auth', 'onbehalf-jwt'];
+export const AUTH_LIST = ['basic-auth', 'jwt-auth', 'key-auth', 'onbehalf-jwt', 'hashed-key-auth'];
 
 export const HEADER_LIST = [
   'A-IM',
