@@ -8196,6 +8196,14 @@
 					"header": {
 						"default": "X-API-KEY",
 						"type": "string"
+					},
+					"hide_credentials": {
+						"default": false,
+						"type": "boolean"
+					},
+					"query": {
+						"default": "apikey",
+						"type": "string"
 					}
 				},
 				"required": [
