@@ -704,13 +704,13 @@ func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName
 
 func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, objName string, variables *[]*entity.Variable) {
 	validPlugins := map[string][]string{
-		"onbehalf-jwt":  {"key", "secret"},
-		"3ds-cas-auth":  {"idp_url", "encryption_key", "encryption_salt"},
-		"3ds-cas-sso":   {"idp_url", "encryption_key", "encryption_salt"},
-		"key-auth":      {"key"},
-		"hashed-key-auth":      {"key"},
-		"file-logger":   {"path"},
-		"proxy-rewrite": {"headers"},
+		"onbehalf-jwt":    {"key", "secret"},
+		"3ds-cas-auth":    {"idp_url", "encryption_key", "encryption_salt"},
+		"3ds-cas-sso":     {"idp_url", "encryption_key", "encryption_salt"},
+		"key-auth":        {"key"},
+		"hashed-key-auth": {"key"},
+		"file-logger":     {"path"},
+		"proxy-rewrite":   {"headers"},
 	}
 
 	objName = strings.ReplaceAll(objName, " ", "_")
@@ -737,7 +737,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 			if plugin == "proxy-rewrite" && key == "headers" {
 				if headers, ok := value.(map[string]interface{}); ok {
 					for headerKey, headerValue := range headers {
-						if strings.EqualFold(headerKey, "authorization") {
+						if strings.EqualFold(headerKey, "authorization") || strings.EqualFold(headerKey, "tenant") {
 							newSecret := fmt.Sprintf("%s.%s.Plugin.%s.%s.%s", object, objName, plugin, key, headerKey)
 							headers[headerKey] = "${" + newSecret + "}"
 							AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", headerValue)})
