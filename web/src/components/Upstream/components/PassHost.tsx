@@ -29,12 +29,12 @@ const Component: React.FC<Props> = ({ form, readonly }) => {
 
   const options = [
     {
-      value: 'pass',
-      label: formatMessage({ id: 'page.upstream.step.pass-host.pass' }),
-    },
-    {
       value: 'node',
       label: formatMessage({ id: 'page.upstream.step.pass-host.node' }),
+    },
+    {
+      value: 'pass',
+      label: formatMessage({ id: 'page.upstream.step.pass-host.pass' }),
     },
     {
       value: 'rewrite',
