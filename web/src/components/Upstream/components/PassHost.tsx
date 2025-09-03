@@ -29,12 +29,12 @@ const Component: React.FC<Props> = ({ form, readonly }) => {
 
   const options = [
     {
-      value: 'node',
-      label: formatMessage({ id: 'page.upstream.step.pass-host.node' }),
-    },
-    {
       value: 'pass',
       label: formatMessage({ id: 'page.upstream.step.pass-host.pass' }),
+    },
+    {
+      value: 'node',
+      label: formatMessage({ id: 'page.upstream.step.pass-host.node' }),
     },
     {
       value: 'rewrite',
@@ -48,7 +48,7 @@ const Component: React.FC<Props> = ({ form, readonly }) => {
       <Form.Item
         label={formatMessage({ id: 'page.upstream.step.pass-host' })}
         name="pass_host"
-        initialValue="pass"
+        initialValue="node"
       >
         <Select disabled={readonly}>
           {options.map((item) => (
