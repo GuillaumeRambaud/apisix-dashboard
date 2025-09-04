@@ -82,7 +82,7 @@ const Scheme: React.FC<Props> = ({ readonly }) => {
       label={formatMessage({ id: 'page.upstream.scheme' })}
       name="scheme"
       rules={[{ required: true }]}
-      initialValue="http"
+      initialValue="https"
       extra={extraMessage}
     >
       <Select disabled={readonly} onChange={onChange}>
