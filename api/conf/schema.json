@@ -3243,7 +3243,6 @@
 				},
 				"required": [
 					"idp_url",
-					"logout_path",
 					"encryption_key",
 					"encryption_salt",
 					"cookie_name"
