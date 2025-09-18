@@ -3243,9 +3243,7 @@
 				},
 				"required": [
 					"idp_url",
-					"encryption_key",
-					"encryption_salt",
-					"cookie_name"
+					"encryption_key"
 				],
 				"type": "object"
 			},
