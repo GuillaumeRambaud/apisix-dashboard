@@ -3227,14 +3227,10 @@
 						"default": "/"
 					},
 					"encryption_key": {
-						"type": "string",
-						"minLength": 8,
-						"maxLength": 32
+						"type": "string"
 					},
 					"encryption_salt": {
-						"type": "string",
-						"minLength": 8,
-						"maxLength": 8
+						"type": "string"
 					},
 					"cookie_name": {
 						"type": "string",
