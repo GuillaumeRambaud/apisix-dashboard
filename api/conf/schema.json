@@ -3230,12 +3230,19 @@
 						"type": "string"
 					},
 					"encryption_salt": {
-						"type": "string"
+						"type": "string",
+						"minLength": 8,
+						"maxLength": 8
 					},
 					"cookie_name": {
 						"type": "string",
 						"default": "WORKER_SESSION"
-					}
+					},
+					"session_lifetime": {
+						"type": "integer",
+						"minimum": 300,
+						"default": 3600
+					}	
 				},
 				"required": [
 					"idp_url",
