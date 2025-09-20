@@ -3196,23 +3196,28 @@
 			"version": 0.1
 		},
 		"3ds-cas-sso": {
-			"priority": 2597,
+			"priority": 2596,
 			"schema": {
 				"$comment": "this is a mark for our injected plugin schema",
 				"properties": {
 					"idp_url": {
-						"type": "string"
+						"type": "string",
+           				 "pattern": "^https?://[^/]+",
+            			 "description": "CAS server URL (must start with http:// or https://)"
 					},
 					"logout_path": {
-						"type": "string"
+						"type": "string", 
+						"default": "/logout"
 					},
 					"idp_url_regex": {
 						"type": "string",
-						"default": ""
+						"default": "^https://[^\\/]+\\.iam\\.(3dexperience|3dx-staging)\\.3ds\\.com$",
+						"description": "Regex to validate dynamic IdP URL from header"
 					},
 					"idp_url_header": {
 						"type": "string",
-						"default": "x-ds-iam-url"
+						"default": "x-ds-iam-url",
+						"description": "Header name to get dynamic IdP URL"
 					},
 					"idp_login_url_key": {
 						"type": "string",
@@ -3227,16 +3232,17 @@
 						"default": "/"
 					},
 					"encryption_key": {
-						"type": "string"
-					},
-					"encryption_salt": {
 						"type": "string",
-						"minLength": 8,
-						"maxLength": 8
+						"pattern": "^[A-Za-z0-9+/]+=*$",
+            			"minLength": 44,
+						"maxLength": 44,
+						"description": "Base64 encoded 32-byte encryption key (exactly 44 characters)"
 					},
 					"cookie_name": {
 						"type": "string",
-						"default": "WORKER_SESSION"
+						"default": "WORKER_SESSION",
+						"pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+						"description": "Cookie name must start with letter and contain only alphanumeric, underscore, or dash"
 					},
 					"session_lifetime": {
 						"type": "integer",
@@ -3245,7 +3251,21 @@
 					},
 					"issue_pt": {
 						"type": "boolean",
-						"default": false
+						"default": true
+					},
+					"http_timeout": {
+						"type": "integer",
+						"minimum": 1000,
+						"maximum": 30000,
+						"default": 10000,
+						"description": "Timeout for HTTP requests to IdP in milliseconds"
+					},
+					"max_retries": {
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 5,
+						"default": 3,
+						"description": "Number of retries for HTTP requests to IdP on failure"
 					}
 				},
 				"required": [
@@ -3254,7 +3274,7 @@
 				],
 				"type": "object"
 			},
-			"version": 0.1
+			"version": 0.3
 		},
 		"ai": {
 			"priority": 22900,
