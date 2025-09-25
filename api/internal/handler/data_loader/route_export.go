@@ -705,8 +705,8 @@ func (h *Handler) HostToVar(host string, variables *[]*entity.Variable, nodeName
 func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, objName string, variables *[]*entity.Variable) {
 	validPlugins := map[string][]string{
 		"onbehalf-jwt":    {"key", "secret"},
-		"3ds-cas-auth":    {"idp_url", "encryption_key", "encryption_salt"},
-		"3ds-cas-sso":     {"idp_url", "encryption_key", "encryption_salt"},
+		"3ds-cas-auth":    {"idp_url", "encryption_key"},
+		"3ds-cas-sso":     {"idp_url", "encryption_key"},
 		"key-auth":        {"key"},
 		"hashed-key-auth": {"key"},
 		"file-logger":     {"path"},
