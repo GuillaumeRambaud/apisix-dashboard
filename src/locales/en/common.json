@@ -1,4 +1,8 @@
 {
+  "actions": {
+    "import": "Import",
+    "export": "Export"
+  },
   "apisix": {
     "dashboard": "APISIX Dashboard",
     "logo": "APISIX Logo"
@@ -306,6 +310,39 @@
       "title": "Edit {{name}}"
     }
   },
+  "importExport": {
+    "titles": {
+        "importSuccess": "Import Successful",
+        "importFailed": "Import Failed",
+        "exportSuccess": "Export Successful",
+        "exportFailed": "Export Failed",
+        "importCompleted": "Import Completed",
+        "configManagement": "Configuration Management"
+      },
+      "messages": {
+        "importSuccess": "The configuration has been successfully imported.",
+        "exportFile": "The configuration file has been exported successfully.",
+        "importFailed": "Failed to import configuration.",
+        "exportFailed": "Failed to export configuration."
+      },
+      "errors": {
+        "importFailed": "An error occurred during import.",
+        "exportFailed": "An error occurred during export."
+      },
+      "sources": {
+        "importExport": "Import / Export"
+      },
+      "descriptions": {
+        "importExport": "Use these tools to import or export your APISIX configuration."
+      },
+      "labels": {
+        "lastImport": "Last Import"
+      },
+      "actions": {
+        "import": "Import",
+        "export": "Export"
+      }
+  },  
   "mark": {
     "question": "?"
   },
@@ -341,6 +378,7 @@
     "consumers": "Consumers",
     "credentials": "Credentials",
     "globalRules": "Global Rules",
+    "importExport": "Import / Export",
     "pluginConfigs": "Plugin Configs",
     "pluginMetadata": "Plugin Metadata",
     "protos": "Protos",

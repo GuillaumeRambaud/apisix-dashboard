@@ -1,3 +1,0 @@
-[submodule ".github/actions/paths-filter"]
-	path = .github/actions/paths-filter
-	url = https://github.com/dorny/paths-filter.git

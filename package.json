@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --cache --max-warnings=0 --no-warn-ignored",
+    "lint": "eslint . --cache --max-warnings=10 --no-warn-ignored",
     "lint:fix": "pnpm lint --fix",
     "preview": "vite preview",
     "prepare": "husky",

@@ -1,0 +1,373 @@
+{
+  "actions": {
+    "import": "Import",
+    "export": "Export"
+  },
+  "apisix": {
+    "dashboard": "Tableau de bord APISIX Dassault Systemes",
+    "logo": "Logo APISIX"
+  },
+  "consumerGroups": {
+    "singular": "Groupe de consommateurs"
+  },
+  "consumers": {
+    "singular": "Consommateur"
+  },
+  "credentials": {
+    "singular": "Identifiant"
+  },
+  "form": {
+    "basic": {
+      "desc": "Description",
+      "labels": {
+        "errorFormat": "Le format de l’étiquette est incorrect, il doit être `clé:valeur`",
+        "key": "Clé",
+        "placeholder": "Saisir du texte comme `clé:valeur`, puis appuyer sur Entrée ou quitter le champ",
+        "title": "Étiquettes",
+        "value": "Valeur"
+      },
+      "name": "Nom",
+      "status": "Statut",
+      "statusOption": {
+        "0": "Désactivé",
+        "1": "Activé"
+      },
+      "title": "Informations de base"
+    },
+    "btn": {
+      "add": "Ajouter",
+      "addARow": "Ajouter une ligne",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "save": "Enregistrer",
+      "upload": "Téléverser",
+      "view": "Voir"
+    },
+    "consumers": {
+      "groupId": "ID du groupe",
+      "username": "Nom d’utilisateur"
+    },
+    "disabled": "Désactivé, cliquer sur l’interrupteur pour activer",
+    "general": {
+      "title": "Général"
+    },
+    "info": {
+      "create_time": "Créé le",
+      "id": "ID",
+      "title": "Informations",
+      "update_time": "Mis à jour le"
+    },
+    "json": {
+      "parseError": "Le format JSON n’est pas valide"
+    },
+    "plugins": {
+      "addPlugin": "Ajouter un plugin",
+      "configId": "ID de configuration du plugin",
+      "editPlugin": "Modifier le plugin",
+      "label": "Plugins",
+      "searchForSelectedPlugins": "Rechercher parmi les plugins sélectionnés",
+      "selectPlugins": {
+        "title": "Sélectionner des plugins"
+      },
+      "viewPlugin": "Voir le plugin"
+    },
+    "protos": {
+      "content": "Contenu",
+      "contentPlaceholder": "Coller ou téléverser un fichier {{fileTypes}}"
+    },
+    "routes": {
+      "enableWebsocket": "Activer WebSocket",
+      "filterFunc": "Fonction de filtrage",
+      "host": "Hôte",
+      "hosts": "Hôtes",
+      "matchRules": "Règles de correspondance",
+      "methods": "Méthodes HTTP",
+      "priority": "Priorité",
+      "remoteAddr": "Adresse distante",
+      "remoteAddrs": "Adresses distantes",
+      "service": "Service",
+      "uri": "URI",
+      "uris": "URIs",
+      "vars": "Variables"
+    },
+    "search": "Rechercher",
+    "secrets": {
+      "aws": {
+        "access_key_id": "ID de clé d’accès",
+        "endpoint_url": "URL du point d’accès",
+        "region": "Région",
+        "secret_access_key": "Clé d’accès secrète",
+        "session_token": "Jeton de session"
+      },
+      "gcp": {
+        "auth": "Authentification",
+        "auth_config": "Configuration d’authentification",
+        "auth_file": "Fichier d’authentification",
+        "client_email": "Email du client",
+        "entries_uri": "URI des entrées",
+        "private_key": "Clé privée",
+        "project_id": "ID du projet",
+        "scope": "Portée",
+        "ssl_verify": "Vérification SSL",
+        "token_uri": "URI du jeton"
+      },
+      "manager": "Gestionnaire de secrets",
+      "managerConfig": "Configuration du gestionnaire",
+      "title": "Configuration des secrets",
+      "vault": {
+        "namespace": "Espace de noms",
+        "prefix": "Préfixe",
+        "token": "Jeton",
+        "uri": "URI"
+      }
+    },
+    "services": {
+      "enableWebsocket": "Activer WebSocket",
+      "hosts": "Hôtes",
+      "script": "Script",
+      "settings": "Paramètres du service"
+    },
+    "ssls": {
+      "cert": "Certificat",
+      "cert_key_list": {
+        "add": "Ajouter une paire",
+        "delete": "Supprimer la paire",
+        "title": "Paires certificat et clé"
+      },
+      "client": {
+        "ca": "Certificat CA client",
+        "depth": "Profondeur de vérification",
+        "skipMtlsUriRegex": "Ignorer mTLS URI Regex",
+        "title": "Client"
+      },
+      "key": "Clé privée",
+      "sni": "SNI",
+      "snis": "SNIs",
+      "ssl_protocols": "Protocoles SSL",
+      "type": "Type de certificat"
+    },
+    "streamRoutes": {
+      "protocol": {
+        "conf": "Configuration",
+        "logger": "Journalisation",
+        "name": "Nom du protocole",
+        "superiorId": "ID supérieur",
+        "title": "Informations du protocole"
+      },
+      "remoteAddr": "Adresse distante",
+      "server": "Serveur",
+      "serverAddr": "Adresse du serveur",
+      "serverPort": "Port du serveur",
+      "sni": "SNI"
+    },
+    "tagsInput": {
+      "placeholder": "Saisir du texte, puis appuyer sur Entrée ou quitter le champ"
+    },
+    "upload": {
+      "fileOverSize": "la taille du fichier est trop grande",
+      "readError": "erreur de lecture du fichier :"
+    },
+    "upstreams": {
+      "checks": {
+        "active": {
+          "concurrency": "Concurrence",
+          "healthy": {
+            "http_statuses": "Codes d’état HTTP",
+            "interval": "Intervalle",
+            "successes": "Réussites",
+            "title": "En bonne santé"
+          },
+          "host": "Hôte",
+          "http_path": "Chemin HTTP",
+          "http_request_headers": "En-têtes de requête HTTP",
+          "https_verify_certificate": "Vérifier le certificat HTTPS",
+          "port": "Port",
+          "timeout": "Délai d’attente",
+          "title": "Actif",
+          "type": "Type",
+          "unhealthy": {
+            "http_failures": "Échecs HTTP",
+            "http_statuses": "Codes d’état HTTP",
+            "interval": "Intervalle",
+            "tcp_failures": "Échecs TCP",
+            "timeouts": "Dépassements de délai",
+            "title": "En mauvaise santé"
+          }
+        },
+        "passive": {
+          "healthy": {
+            "http_statuses": "Codes d’état HTTP",
+            "successes": "Réussites",
+            "title": "En bonne santé"
+          },
+          "title": "Passif",
+          "type": "Type",
+          "unhealthy": {
+            "http_failures": "Échecs HTTP",
+            "http_statuses": "Codes d’état HTTP",
+            "tcp_failures": "Échecs TCP",
+            "timeouts": "Dépassements de délai",
+            "title": "En mauvaise santé"
+          }
+        },
+        "title": "Vérifications de santé"
+      },
+      "connectionConfiguration": "Configuration de la connexion",
+      "discoveryArgs": {
+        "title": "Arguments de découverte"
+      },
+      "discoveryType": {
+        "title": "Type de découverte"
+      },
+      "findUpstreamFrom": "Trouver un serveur amont à partir de",
+      "hashOn": "Hachage sur",
+      "hashOnDesc": "Valide uniquement lorsque `type` est `chash`",
+      "identifier": "Identifiant amont",
+      "inline": "Configuration amont intégrée",
+      "keepalivePool": {
+        "idleTimeout": "Délai d’inactivité",
+        "requests": "Requêtes",
+        "size": "Taille",
+        "title": "Pool de connexions persistantes"
+      },
+      "key": "Clé",
+      "keyDesc": "Valide uniquement lorsque `type` est `chash`",
+      "loadBalancing": "Équilibrage de charge",
+      "nodes": {
+        "action": {
+          "title": "Action"
+        },
+        "add": "Ajouter un nœud",
+        "host": {
+          "title": "Hôte"
+        },
+        "port": {
+          "title": "Port"
+        },
+        "priority": {
+          "title": "Priorité"
+        },
+        "title": "Nœuds",
+        "weight": {
+          "title": "Poids"
+        }
+      },
+      "passHost": "Transmettre l’hôte",
+      "retries": "Tentatives",
+      "retry": "Réessayer",
+      "retryTimeout": "Délai de nouvelle tentative",
+      "scheme": "Schéma",
+      "serviceDiscovery": {
+        "serviceName": "Nom du service",
+        "title": "Découverte de service"
+      },
+      "serviceId": "ID du service",
+      "serviceName": {
+        "title": "Nom du service"
+      },
+      "timeout": {
+        "connect": "Connexion",
+        "read": "Lecture",
+        "send": "Envoi",
+        "title": "Délai d’attente"
+      },
+      "title": "Amont",
+      "tls": {
+        "clientCert": "Certificat client",
+        "clientCertId": "ID du certificat client",
+        "clientCertKeyPair": "Paire clé-certificat client",
+        "clientKey": "Clé client",
+        "title": "TLS",
+        "verify": "Vérifier"
+      },
+      "type": "Type",
+      "updateTime": "Heure de mise à jour",
+      "upstreamHost": "Hôte amont",
+      "upstreamHostDesc": "Définir ceci lorsque `pass_host` est `rewrite`",
+      "upstreamId": "ID amont"
+    }
+  },
+  "globalRules": {
+    "singular": "Règle globale"
+  },
+  "help-us-translate": "Aidez-nous à traduire !",
+  "info": {
+    "add": {
+      "success": "Ajout de {{name}} réussi",
+      "title": "Ajouter {{name}}"
+    },
+    "delete": {
+      "content": "Voulez-vous supprimer {{name}}",
+      "success": "Suppression de {{name}} réussie",
+      "title": "Supprimer {{name}}"
+    },
+    "detail": {
+      "title": "Détail de {{name}}"
+    },
+    "edit": {
+      "success": "Modification de {{name}} réussie",
+      "title": "Modifier {{name}}"
+    }
+  },
+  "mark": {
+    "question": "?"
+  },
+  "noData": "Aucune donnée",
+  "or": "OU",
+  "pluginConfigs": {
+    "singular": "Configuration de plugin"
+  },
+  "pluginMetadata": {
+    "search": "Rechercher les métadonnées de plugin",
+    "singular": "Métadonnée de plugin"
+  },
+  "protos": {
+    "singular": "Proto"
+  },
+  "routes": {
+    "singular": "Route"
+  },
+  "seconds": "Secondes",
+  "secrets": {
+    "singular": "Secret"
+  },
+  "services": {
+    "singular": "Service"
+  },
+  "settings": {
+    "adminKey": "Clé administrateur",
+    "title": "Paramètres",
+    "ui-commit-sha": "UI Commit SHA"
+  },
+  "sources": {
+    "consumerGroups": "Groupes de consommateurs",
+    "consumers": "Consommateurs",
+    "credentials": "Identifiants",
+    "globalRules": "Règles globales",
+    "importExport": "Import / Export",
+    "pluginConfigs": "Configurations de plugins",
+    "pluginMetadata": "Métadonnées de plugins",
+    "protos": "Protos",
+    "routes": "Routes",
+    "secrets": "Secrets",
+    "services": "Services",
+    "ssls": "SSLs",
+    "streamRoutes": "Routes de flux",
+    "upstreams": "Amonts"
+  },
+  "ssls": {
+    "singular": "SSL"
+  },
+  "streamRoutes": {
+    "singular": "Route de flux"
+  },
+  "table": {
+    "actions": "Actions",
+    "disabled": "Désactivé",
+    "enabled": "Activé"
+  },
+  "upstreams": {
+    "singular": "Amont"
+  }
+}

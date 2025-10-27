@@ -21,6 +21,7 @@ import { Route as RoutesIndexImport } from './routes/routes/index'
 import { Route as ProtosIndexImport } from './routes/protos/index'
 import { Route as PluginmetadataIndexImport } from './routes/plugin_metadata/index'
 import { Route as PluginconfigsIndexImport } from './routes/plugin_configs/index'
+import { Route as ImportexportIndexImport } from './routes/import_export/index'
 import { Route as GlobalrulesIndexImport } from './routes/global_rules/index'
 import { Route as ConsumersIndexImport } from './routes/consumers/index'
 import { Route as ConsumergroupsIndexImport } from './routes/consumer_groups/index'
@@ -117,6 +118,12 @@ const PluginmetadataIndexRoute = PluginmetadataIndexImport.update({
 const PluginconfigsIndexRoute = PluginconfigsIndexImport.update({
   id: '/plugin_configs/',
   path: '/plugin_configs/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ImportexportIndexRoute = ImportexportIndexImport.update({
+  id: '/import_export/',
+  path: '/import_export/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -454,6 +461,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GlobalrulesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/import_export/': {
+      id: '/import_export/'
+      path: '/import_export'
+      fullPath: '/import_export'
+      preLoaderRoute: typeof ImportexportIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/plugin_configs/': {
       id: '/plugin_configs/'
       path: '/plugin_configs'
@@ -741,6 +755,7 @@ export interface FileRoutesByFullPath {
   '/consumer_groups': typeof ConsumergroupsIndexRoute
   '/consumers': typeof ConsumersIndexRoute
   '/global_rules': typeof GlobalrulesIndexRoute
+  '/import_export': typeof ImportexportIndexRoute
   '/plugin_configs': typeof PluginconfigsIndexRoute
   '/plugin_metadata': typeof PluginmetadataIndexRoute
   '/protos': typeof ProtosIndexRoute
@@ -790,6 +805,7 @@ export interface FileRoutesByTo {
   '/consumer_groups': typeof ConsumergroupsIndexRoute
   '/consumers': typeof ConsumersIndexRoute
   '/global_rules': typeof GlobalrulesIndexRoute
+  '/import_export': typeof ImportexportIndexRoute
   '/plugin_configs': typeof PluginconfigsIndexRoute
   '/plugin_metadata': typeof PluginmetadataIndexRoute
   '/protos': typeof ProtosIndexRoute
@@ -838,6 +854,7 @@ export interface FileRoutesById {
   '/consumer_groups/': typeof ConsumergroupsIndexRoute
   '/consumers/': typeof ConsumersIndexRoute
   '/global_rules/': typeof GlobalrulesIndexRoute
+  '/import_export/': typeof ImportexportIndexRoute
   '/plugin_configs/': typeof PluginconfigsIndexRoute
   '/plugin_metadata/': typeof PluginmetadataIndexRoute
   '/protos/': typeof ProtosIndexRoute
@@ -889,6 +906,7 @@ export interface FileRouteTypes {
     | '/consumer_groups'
     | '/consumers'
     | '/global_rules'
+    | '/import_export'
     | '/plugin_configs'
     | '/plugin_metadata'
     | '/protos'
@@ -937,6 +955,7 @@ export interface FileRouteTypes {
     | '/consumer_groups'
     | '/consumers'
     | '/global_rules'
+    | '/import_export'
     | '/plugin_configs'
     | '/plugin_metadata'
     | '/protos'
@@ -983,6 +1002,7 @@ export interface FileRouteTypes {
     | '/consumer_groups/'
     | '/consumers/'
     | '/global_rules/'
+    | '/import_export/'
     | '/plugin_configs/'
     | '/plugin_metadata/'
     | '/protos/'
@@ -1033,6 +1053,7 @@ export interface RootRouteChildren {
   ConsumergroupsIndexRoute: typeof ConsumergroupsIndexRoute
   ConsumersIndexRoute: typeof ConsumersIndexRoute
   GlobalrulesIndexRoute: typeof GlobalrulesIndexRoute
+  ImportexportIndexRoute: typeof ImportexportIndexRoute
   PluginconfigsIndexRoute: typeof PluginconfigsIndexRoute
   PluginmetadataIndexRoute: typeof PluginmetadataIndexRoute
   ProtosIndexRoute: typeof ProtosIndexRoute
@@ -1071,6 +1092,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConsumergroupsIndexRoute: ConsumergroupsIndexRoute,
   ConsumersIndexRoute: ConsumersIndexRoute,
   GlobalrulesIndexRoute: GlobalrulesIndexRoute,
+  ImportexportIndexRoute: ImportexportIndexRoute,
   PluginconfigsIndexRoute: PluginconfigsIndexRoute,
   PluginmetadataIndexRoute: PluginmetadataIndexRoute,
   ProtosIndexRoute: ProtosIndexRoute,
@@ -1118,6 +1140,7 @@ export const routeTree = rootRoute
         "/consumer_groups/",
         "/consumers/",
         "/global_rules/",
+        "/import_export/",
         "/plugin_configs/",
         "/plugin_metadata/",
         "/protos/",
@@ -1184,6 +1207,9 @@ export const routeTree = rootRoute
     },
     "/global_rules/": {
       "filePath": "global_rules/index.tsx"
+    },
+    "/import_export/": {
+      "filePath": "import_export/index.tsx"
     },
     "/plugin_configs/": {
       "filePath": "plugin_configs/index.tsx"

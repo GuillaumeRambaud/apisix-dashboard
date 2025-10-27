@@ -26,6 +26,7 @@ const LangMap: Record<keyof Resources, string> = {
   de: 'Deutsch',
   zh: '中文',
   es: 'Español',
+  fr: 'Français',
 };
 
 const TranslationProgress = ({ lang }: { lang: string }) => {

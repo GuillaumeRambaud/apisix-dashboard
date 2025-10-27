@@ -23,6 +23,10 @@ export type NavRoute = {
 };
 export const navRoutes: NavRoute[] = [
   {
+    to: '/import_export',
+    label: 'importExport',
+  },
+  {
     to: '/services',
     label: 'services',
   },
@@ -62,10 +66,10 @@ export const navRoutes: NavRoute[] = [
     to: '/plugin_configs',
     label: 'pluginConfigs',
   },
-  {
-    to: '/secrets',
-    label: 'secrets',
-  },
+  // {
+  //   to: '/secrets',
+  //   label: 'secrets',
+  // },
   {
     to: '/protos',
     label: 'protos',

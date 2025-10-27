@@ -1,4 +1,8 @@
 {
+  "actions": {
+    "import": "Dateiimport",
+    "export": "Exportieren"
+  },
   "apisix": {
     "dashboard": "APISIX Dashboard",
     "logo": "APISIX Logo"
@@ -341,6 +345,7 @@
     "consumers": "Konsumenten",
     "credentials": "Anmeldeinformationen",
     "globalRules": "Globale Regeln",
+    "importExport": "Import / Export",
     "pluginConfigs": "Plugin Konfigurationen",
     "pluginMetadata": "Plugin Metadaten",
     "protos": "Protos",
