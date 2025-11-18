@@ -591,16 +591,6 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			return err
 		}
 
-		ro.Host = h.HostToVar(ro.Host, &conf.Variables, "Route.Host")
-
-		if ro.Hosts != nil {
-			for index, host := range ro.Hosts {
-				key := ro.Name + ".Hosts" + strconv.Itoa(index)
-				host = h.HostToVar(ro.Host, &conf.Variables, key)
-				ro.Hosts[index] = host
-			}
-		}
-
 		//Variablization of route upstream
 		if ro.Upstream != nil {
 			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route", ro.Name)

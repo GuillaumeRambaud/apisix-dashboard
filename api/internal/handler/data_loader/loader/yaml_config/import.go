@@ -221,13 +221,6 @@ func (o *Loader) Import(input interface{}) (*loader.DataSets, error) {
 			}
 		}
 
-		if route.Host != "" {
-			variable := getVariable(importData.Variables, fmt.Sprintf("%v", route.Host))
-			if variable != nil {
-				route.Host = variable.Value
-			}
-		}
-
 		if !reflect.DeepEqual(route.Upstream, entity.UpstreamImport{}) {
 			// Replace the variable with the actual value
 			nodes := []*entity.Node{}
