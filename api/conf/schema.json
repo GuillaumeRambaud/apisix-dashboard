@@ -8199,11 +8199,24 @@
 					},
 					"user_id":{
 						"type": "string"
+					},
+					"user_id_header": {
+						"default": "X-USER",
+						"type": "string"
+					},
+					"user_id_query": {
+						"default": "user",
+						"type": "string"
+					},
+					"issuer": {
+						"type": "string"
+					},
+					"secret": {
+						"type": "string",
+						"default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
 					}
 				},
-				"required": [
-				"key", "legal_entity_id", "user_id"
-				],
+				"required": ["key"],
 				"title": "work with consumer object",
     			"type": "object"
 			},
@@ -8230,10 +8243,6 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"issuer",
-					"secret"
-				],
 				"type": "object"
 			},
 			"version": 0.1
