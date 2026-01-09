@@ -8217,6 +8217,23 @@
 					}
 				},
 				"required": ["key"],
+				"oneOf": [
+					{
+						"required": [
+							"user_id"
+						]
+					},
+					{
+						"required": [
+							"user_id_header"
+						]
+					},
+					{
+						"required": [
+							"user_id_query"
+						]
+					}
+				],
 				"title": "work with consumer object",
     			"type": "object"
 			},
