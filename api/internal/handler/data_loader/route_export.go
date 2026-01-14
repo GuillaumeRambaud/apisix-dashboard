@@ -699,7 +699,6 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 		"3ds-cas-sso":     {"idp_url", "encryption_key"},
 		"key-auth":        {"key"},
 		"hashed-key-auth": {"key"},
-		"file-logger":     {"path"},
 		"proxy-rewrite":   {"headers"},
 	}
 
@@ -736,13 +735,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 					pluginMap[key] = headers
 				}
 			} else {
-				var newSecret string
-				if plugin == "file-logger" && key == "path" {
-					newSecret = "Route.file-logger.Path"
-				} else {
-					newSecret = fmt.Sprintf("%s.%s.Plugin.%s.%s", object, objName, plugin, key)
-				}
-
+				var newSecret = fmt.Sprintf("%s.%s.Plugin.%s.%s", object, objName, plugin, key)
 				pluginMap[key] = "${" + newSecret + "}"
 				AddVariable(variables, &entity.Variable{Key: newSecret, Value: fmt.Sprintf("%v", value)})
 			}
