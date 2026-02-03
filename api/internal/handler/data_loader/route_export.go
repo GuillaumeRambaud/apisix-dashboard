@@ -594,6 +594,10 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 		//Variablization of route upstream
 		if ro.Upstream != nil {
 			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route", ro.Name)
+
+			ro.Upstream.Timeout = nil
+			ro.Upstream.Checks = nil
+			ro.Upstream.KeepalivePool = nil
 		}
 
 		if ro.Plugins != nil {
@@ -657,6 +661,10 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 
 		if se.Upstream != nil {
 			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service", se.Name)
+
+			se.Upstream.Timeout = nil
+			se.Upstream.Checks = nil
+			se.Upstream.KeepalivePool = nil
 		}
 
 		if se.Plugins != nil {
