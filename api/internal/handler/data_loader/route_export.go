@@ -624,6 +624,10 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 			return err
 		}
 
+		//Remove timeout field during export
+		up.Timeout = nil
+		up.Checks = nil
+
 		up.Nodes = h.NodeToVar(up.Nodes, &conf.Variables, "Upstream", up.Name)
 		log.Infof("UpstreamList up.Nodes: %s", up.Nodes)
 		upstreams = append(upstreams, up)
