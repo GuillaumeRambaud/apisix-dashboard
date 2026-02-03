@@ -567,6 +567,10 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 			h.PluginsToVar(con.Plugins, "Consumer", con.Username, &conf.Variables)
 		}
 
+		//Clean yaml file, Remove unnecessary fields
+		con.CreateTime = 0
+		con.UpdateTime = 0
+
 		consumers = append(consumers, con)
 	}
 
@@ -591,10 +595,15 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 			return err
 		}
 
+		//Clean yaml file, Remove unnecessary fields
+		ro.CreateTime = 0
+		ro.UpdateTime = 0
+
 		//Variablization of route upstream
 		if ro.Upstream != nil {
 			ro.Upstream.Nodes = h.NodeToVar(ro.Upstream.Nodes, &conf.Variables, "Route", ro.Name)
 
+			//Clean yaml file
 			ro.Upstream.Timeout = nil
 			ro.Upstream.Checks = nil
 			ro.Upstream.KeepalivePool = nil
@@ -628,7 +637,9 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 			return err
 		}
 
-		//Remove timeout field during export
+		//Clean yaml file, Remove unnecessary fields
+		up.CreateTime = 0
+		up.UpdateTime = 0
 		up.Timeout = nil
 		up.Checks = nil
 		up.KeepalivePool = nil
@@ -658,6 +669,10 @@ func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) er
 		if err != nil {
 			return err
 		}
+
+		//Clean yaml file, Remove unnecessary fields
+		se.CreateTime = 0
+		se.UpdateTime = 0
 
 		if se.Upstream != nil {
 			se.Upstream.Nodes = h.NodeToVar(se.Upstream.Nodes, &conf.Variables, "Service", se.Name)
@@ -718,6 +733,7 @@ func (h *Handler) PluginsToVar(plugins map[string]interface{}, object string, ob
 	objName = strings.ReplaceAll(objName, " ", "_")
 
 	for plugin, config := range plugins {
+
 		// Skip unsupported plugins
 		keysOfInterest, ok := validPlugins[plugin]
 		if !ok {
@@ -766,22 +782,6 @@ func AddVariable(variables *[]*entity.Variable, newVar *entity.Variable) {
 		}
 	}
 	*variables = append(*variables, newVar)
-}
-
-func deepCopyRoute(src *entity.Route) (*entity.Route, error) {
-	// Serialize the source slice to JSON
-	data, err := json.Marshal(src)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal routes: %w", err)
-	}
-
-	// Deserialize the JSON into a new slice
-	var dst *entity.Route
-	if err := json.Unmarshal(data, &dst); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal routes: %w", err)
-	}
-
-	return dst, nil
 }
 
 func DeepCopy[T any](src *T) (*T, error) {
