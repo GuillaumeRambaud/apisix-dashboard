@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Divider, Form, notification, Switch } from 'antd';
+import { Form } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { useIntl, useLocation } from 'umi';
+import { useLocation } from 'umi';
 
-import PanelSection from '@/components/PanelSection';
-
-import ActiveCheck from './components/active-check';
-import KeepalivePool from './components/KeepalivePool';
 import PassHost from './components/PassHost';
-import PassiveCheck from './components/passive-check';
 import Retries from './components/Retries';
 import RetryTimeout from './components/RetryTimeout';
 import Scheme from './components/Scheme';
-import Timeout from './components/Timeout';
 import TLSComponent from './components/TLS';
 import Type from './components/Type';
 import UpstreamSelector from './components/UpstreamSelector';
@@ -69,27 +63,27 @@ const UpstreamForm: React.FC<Props> = forwardRef(
     ref,
   ) => {
     const location = useLocation();
-    const { formatMessage } = useIntl();
+    // const { formatMessage } = useIntl();
     const [readonly, setReadonly] = useState(false);
     const [hiddenForm, setHiddenForm] = useState(false);
 
-    const timeoutFields = [
-      {
-        label: formatMessage({ id: 'page.upstream.step.connect.timeout' }),
-        name: ['timeout', 'connect'],
-        desc: formatMessage({ id: 'page.upstream.step.connect.timeout.desc' }),
-      },
-      {
-        label: formatMessage({ id: 'page.upstream.step.send.timeout' }),
-        name: ['timeout', 'send'],
-        desc: formatMessage({ id: 'page.upstream.step.send.timeout.desc' }),
-      },
-      {
-        label: formatMessage({ id: 'page.upstream.step.read.timeout' }),
-        name: ['timeout', 'read'],
-        desc: formatMessage({ id: 'page.upstream.step.read.timeout.desc' }),
-      },
-    ];
+    // const timeoutFields = [
+    //   {
+    //     label: formatMessage({ id: 'page.upstream.step.connect.timeout' }),
+    //     name: ['timeout', 'connect'],
+    //     desc: formatMessage({ id: 'page.upstream.step.connect.timeout.desc' }),
+    //   },
+    //   {
+    //     label: formatMessage({ id: 'page.upstream.step.send.timeout' }),
+    //     name: ['timeout', 'send'],
+    //     desc: formatMessage({ id: 'page.upstream.step.send.timeout.desc' }),
+    //   },
+    //   {
+    //     label: formatMessage({ id: 'page.upstream.step.read.timeout' }),
+    //     name: ['timeout', 'read'],
+    //     desc: formatMessage({ id: 'page.upstream.step.read.timeout.desc' }),
+    //   },
+    // ];
 
     useImperativeHandle(ref, () => ({
       getData: () => convertToRequestData(form.getFieldsValue()),
@@ -148,139 +142,139 @@ const UpstreamForm: React.FC<Props> = forwardRef(
       resetForm(upstream_id);
     }, [form.getFieldValue('upstream_id'), list]);
 
-    const ActiveHealthCheck = () => (
-      <React.Fragment>
-        <ActiveCheck.Type readonly={readonly} />
-        <Form.Item
-          noStyle
-          shouldUpdate={(prev, next) => prev.checks.active.type !== next.checks.active.type}
-        >
-          {() => {
-            const type = form.getFieldValue(['checks', 'active', 'type']);
-            if (['https'].includes(type)) {
-              return <ActiveCheck.HttpsVerifyCertificate readonly={readonly} />;
-            }
-            return null;
-          }}
-        </Form.Item>
-        <ActiveCheck.Timeout readonly={readonly} />
-        <ActiveCheck.Concurrency readonly={readonly} />
-        <ActiveCheck.Host readonly={readonly} />
-        <ActiveCheck.Port readonly={readonly} />
-        <ActiveCheck.HttpPath readonly={readonly} />
-        <ActiveCheck.ReqHeaders readonly={readonly} />
+    // const ActiveHealthCheck = () => (
+    //   <React.Fragment>
+    //     <ActiveCheck.Type readonly={readonly} />
+    //     <Form.Item
+    //       noStyle
+    //       shouldUpdate={(prev, next) => prev.checks.active.type !== next.checks.active.type}
+    //     >
+    //       {() => {
+    //         const type = form.getFieldValue(['checks', 'active', 'type']);
+    //         if (['https'].includes(type)) {
+    //           return <ActiveCheck.HttpsVerifyCertificate readonly={readonly} />;
+    //         }
+    //         return null;
+    //       }}
+    //     </Form.Item>
+    //     <ActiveCheck.Timeout readonly={readonly} />
+    //     <ActiveCheck.Concurrency readonly={readonly} />
+    //     <ActiveCheck.Host readonly={readonly} />
+    //     <ActiveCheck.Port readonly={readonly} />
+    //     <ActiveCheck.HttpPath readonly={readonly} />
+    //     <ActiveCheck.ReqHeaders readonly={readonly} />
 
-        <Divider orientation="left" plain>
-          {formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.status' })}
-        </Divider>
+    //     <Divider orientation="left" plain>
+    //       {formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.status' })}
+    //     </Divider>
 
-        <ActiveCheck.Healthy.Interval readonly={readonly} />
-        <ActiveCheck.Healthy.Successes readonly={readonly} />
-        <ActiveCheck.Healthy.HttpStatuses readonly={readonly} />
+    //     <ActiveCheck.Healthy.Interval readonly={readonly} />
+    //     <ActiveCheck.Healthy.Successes readonly={readonly} />
+    //     <ActiveCheck.Healthy.HttpStatuses readonly={readonly} />
 
-        <Divider orientation="left" plain>
-          {formatMessage({ id: 'page.upstream.step.healthyCheck.unhealthyStatus' })}
-        </Divider>
+    //     <Divider orientation="left" plain>
+    //       {formatMessage({ id: 'page.upstream.step.healthyCheck.unhealthyStatus' })}
+    //     </Divider>
 
-        <ActiveCheck.Unhealthy.Timeouts readonly={readonly} />
-        <ActiveCheck.Unhealthy.Interval readonly={readonly} />
-        <ActiveCheck.Unhealthy.HttpStatuses readonly={readonly} />
-        <ActiveCheck.Unhealthy.HttpFailures readonly={readonly} />
-        <ActiveCheck.Unhealthy.TCPFailures readonly={readonly} />
-      </React.Fragment>
-    );
+    //     <ActiveCheck.Unhealthy.Timeouts readonly={readonly} />
+    //     <ActiveCheck.Unhealthy.Interval readonly={readonly} />
+    //     <ActiveCheck.Unhealthy.HttpStatuses readonly={readonly} />
+    //     <ActiveCheck.Unhealthy.HttpFailures readonly={readonly} />
+    //     <ActiveCheck.Unhealthy.TCPFailures readonly={readonly} />
+    //   </React.Fragment>
+    // );
 
-    const PassiveHealthCheck = () => (
-      <React.Fragment>
-        <PassiveCheck.Type readonly={readonly} />
+    // const PassiveHealthCheck = () => (
+    //   <React.Fragment>
+    //     <PassiveCheck.Type readonly={readonly} />
 
-        <Divider orientation="left" plain>
-          {formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.status' })}
-        </Divider>
+    //     <Divider orientation="left" plain>
+    //       {formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.status' })}
+    //     </Divider>
 
-        <PassiveCheck.Healthy.HttpStatuses readonly={readonly} />
-        <PassiveCheck.Healthy.Successes readonly={readonly} />
+    //     <PassiveCheck.Healthy.HttpStatuses readonly={readonly} />
+    //     <PassiveCheck.Healthy.Successes readonly={readonly} />
 
-        <Divider orientation="left" plain>
-          {formatMessage({ id: 'page.upstream.step.healthyCheck.unhealthyStatus' })}
-        </Divider>
+    //     <Divider orientation="left" plain>
+    //       {formatMessage({ id: 'page.upstream.step.healthyCheck.unhealthyStatus' })}
+    //     </Divider>
 
-        <PassiveCheck.Unhealthy.Timeouts readonly={readonly} />
-        <PassiveCheck.Unhealthy.TcpFailures readonly={readonly} />
-        <PassiveCheck.Unhealthy.HttpFailures readonly={readonly} />
-        <PassiveCheck.Unhealthy.HttpStatuses readonly={readonly} />
-      </React.Fragment>
-    );
+    //     <PassiveCheck.Unhealthy.Timeouts readonly={readonly} />
+    //     <PassiveCheck.Unhealthy.TcpFailures readonly={readonly} />
+    //     <PassiveCheck.Unhealthy.HttpFailures readonly={readonly} />
+    //     <PassiveCheck.Unhealthy.HttpStatuses readonly={readonly} />
+    //   </React.Fragment>
+    // );
 
-    const HealthCheckComponent = () => {
-      return (
-        <PanelSection
-          title={formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.check' })}
-        >
-          <Form.Item
-            label={formatMessage({ id: 'page.upstream.step.healthyCheck.active' })}
-            name={['custom', 'checks', 'active']}
-            valuePropName="checked"
-          >
-            <Switch disabled={readonly} />
-          </Form.Item>
-          <Form.Item shouldUpdate noStyle>
-            {() => {
-              const active = form.getFieldValue(['custom', 'checks', 'active']);
-              if (active) {
-                return <ActiveHealthCheck />;
-              }
-              return null;
-            }}
-          </Form.Item>
-          <Divider orientation="left" plain />
-          <Form.Item
-            label={formatMessage({ id: 'page.upstream.step.healthyCheck.passive' })}
-            name={['custom', 'checks', 'passive']}
-            valuePropName="checked"
-            tooltip={formatMessage({ id: 'component.upstream.other.health-check.passive-only' })}
-          >
-            <Switch disabled={readonly} />
-          </Form.Item>
-          <Form.Item
-            shouldUpdate={(prev, next) =>
-              prev.custom?.checks?.passive !== next.custom?.checks?.passive
-            }
-            noStyle
-          >
-            {() => {
-              const passive = form.getFieldValue(['custom', 'checks', 'passive']);
-              const active = form.getFieldValue(['custom', 'checks', 'active']);
-              if (passive) {
-                /*
-                 * When enable passive check, we should enable active check, too.
-                 * When we use form.setFieldsValue to enable active check, error throws.
-                 * We choose to alert users first, and need users to enable active check manually.
-                 */
-                if (!active) {
-                  notification.warn({
-                    message: formatMessage({ id: 'component.upstream.other.health-check.invalid' }),
-                    description: formatMessage({
-                      id: 'component.upstream.other.health-check.passive-only',
-                    }),
-                  });
-                }
-                return <PassiveHealthCheck />;
-              }
-              return null;
-            }}
-          </Form.Item>
-        </PanelSection>
-      );
-    };
+    // const HealthCheckComponent = () => {
+    //   return (
+    //     <PanelSection
+    //       title={formatMessage({ id: 'page.upstream.step.healthyCheck.healthy.check' })}
+    //     >
+    //       <Form.Item
+    //         label={formatMessage({ id: 'page.upstream.step.healthyCheck.active' })}
+    //         name={['custom', 'checks', 'active']}
+    //         valuePropName="checked"
+    //       >
+    //         <Switch disabled={readonly} />
+    //       </Form.Item>
+    //       <Form.Item shouldUpdate noStyle>
+    //         {() => {
+    //           const active = form.getFieldValue(['custom', 'checks', 'active']);
+    //           if (active) {
+    //             return <ActiveHealthCheck />;
+    //           }
+    //           return null;
+    //         }}
+    //       </Form.Item>
+    //       <Divider orientation="left" plain />
+    //       <Form.Item
+    //         label={formatMessage({ id: 'page.upstream.step.healthyCheck.passive' })}
+    //         name={['custom', 'checks', 'passive']}
+    //         valuePropName="checked"
+    //         tooltip={formatMessage({ id: 'component.upstream.other.health-check.passive-only' })}
+    //       >
+    //         <Switch disabled={readonly} />
+    //       </Form.Item>
+    //       <Form.Item
+    //         shouldUpdate={(prev, next) =>
+    //           prev.custom?.checks?.passive !== next.custom?.checks?.passive
+    //         }
+    //         noStyle
+    //       >
+    //         {() => {
+    //           const passive = form.getFieldValue(['custom', 'checks', 'passive']);
+    //           const active = form.getFieldValue(['custom', 'checks', 'active']);
+    //           if (passive) {
+    //             /*
+    //              * When enable passive check, we should enable active check, too.
+    //              * When we use form.setFieldsValue to enable active check, error throws.
+    //              * We choose to alert users first, and need users to enable active check manually.
+    //              */
+    //             if (!active) {
+    //               notification.warn({
+    //                 message: formatMessage({ id: 'component.upstream.other.health-check.invalid' }),
+    //                 description: formatMessage({
+    //                   id: 'component.upstream.other.health-check.passive-only',
+    //                 }),
+    //               });
+    //             }
+    //             return <PassiveHealthCheck />;
+    //           }
+    //           return null;
+    //         }}
+    //       </Form.Item>
+    //     </PanelSection>
+    //   );
+    // };
 
-    const KeepalivePoolComponent = () => {
-      return (
-        <PanelSection title={formatMessage({ id: 'page.upstream.step.keepalive_pool' })}>
-          <KeepalivePool readonly={readonly} />
-        </PanelSection>
-      );
-    };
+    // const KeepalivePoolComponent = () => {
+    //   return (
+    //     <PanelSection title={formatMessage({ id: 'page.upstream.step.keepalive_pool' })}>
+    //       <KeepalivePool readonly={readonly} />
+    //     </PanelSection>
+    //   );
+    // };
 
     return (
       <Form
@@ -322,13 +316,13 @@ const UpstreamForm: React.FC<Props> = forwardRef(
               }}
             </Form.Item>
 
-            {timeoutFields.map((item, index) => (
+            {/* {timeoutFields.map((item, index) => (
               <Timeout key={index} {...item} readonly={readonly} />
-            ))}
+            ))} */}
 
-            <KeepalivePoolComponent />
+            {/* <KeepalivePoolComponent /> */}
 
-            <HealthCheckComponent />
+            {/* <HealthCheckComponent /> */}
           </React.Fragment>
         )}
       </Form>
