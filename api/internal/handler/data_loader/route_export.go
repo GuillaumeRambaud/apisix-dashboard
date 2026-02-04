@@ -547,7 +547,9 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 			return true
 		},
 		Less: func(i, j interface{}) bool {
-			return true
+			ci := i.(*entity.Consumer)
+			cj := j.(*entity.Consumer)
+			return ci.Username < cj.Username
 		},
 	})
 
@@ -582,7 +584,16 @@ func (h *Handler) ConsumerList(c droplet.Context, conf *loader.DataSetsExport) e
 // routeList Return all the routes configurations
 func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) error {
 	routes := []*entity.Route{}
-	routeList, err := h.routeStore.List(c.Context(), store.ListInput{})
+	routeList, err := h.routeStore.List(c.Context(), store.ListInput{
+		Predicate: func(obj interface{}) bool {
+			return true
+		},
+		Less: func(i, j interface{}) bool {
+			ri := i.(*entity.Route)
+			rj := j.(*entity.Route)
+			return ri.Name < rj.Name
+		},
+	})
 
 	if err != nil {
 		return err
@@ -624,7 +635,16 @@ func (h *Handler) RouteList(c droplet.Context, conf *loader.DataSetsExport) erro
 // UpstreamList Return all the upstreams configurations
 func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) error {
 	upstreams := []*entity.Upstream{}
-	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{})
+	upstreamList, err := h.upstreamStore.List(c.Context(), store.ListInput{
+		Predicate: func(obj interface{}) bool {
+			return true
+		},
+		Less: func(i, j interface{}) bool {
+			ui := i.(*entity.Upstream)
+			uj := j.(*entity.Upstream)
+			return ui.Name < uj.Name
+		},
+	})
 
 	if err != nil {
 		return err
@@ -657,7 +677,16 @@ func (h *Handler) UpstreamList(c droplet.Context, conf *loader.DataSetsExport) e
 // ServiceList Return all the services configurations
 func (h *Handler) ServiceList(c droplet.Context, conf *loader.DataSetsExport) error {
 	services := []*entity.Service{}
-	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{})
+	serviceList, err := h.serviceStore.List(c.Context(), store.ListInput{
+		Predicate: func(obj interface{}) bool {
+			return true
+		},
+		Less: func(i, j interface{}) bool {
+			si := i.(*entity.Service)
+			sj := j.(*entity.Service)
+			return si.Name < sj.Name
+		},
+	})
 
 	if err != nil {
 		return err
