@@ -7506,6 +7506,10 @@
           "secret": {
             "type": "string",
             "default": "ltqywGVY0N54fWKsAn0NIWsm9EcIl0V/i93Sj4UIyzg="
+          },
+          "header": {
+            "type": "string",
+            "default": "X-OBA-JWT"
           }
         },
         "required": ["key", "issuer", "secret"],
